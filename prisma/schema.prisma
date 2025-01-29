@@ -12,6 +12,7 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model Session {
   id        String   @id
   expiresAt DateTime
@@ -158,5 +159,5 @@ model Loan {
   loanerSatisfactionMessage   String? // only set if the loan is finished
   borrowerSatisfactionMessage String? // only set if the loan is finished
 
-  @@map("queries")
+  @@map("loans")
 }
