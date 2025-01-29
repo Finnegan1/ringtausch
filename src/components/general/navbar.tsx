@@ -6,7 +6,7 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { LogOut, LayoutDashboard, Settings, CheckSquare } from "lucide-react";
 
-export function DashboardNav() {
+export function NavBar() {
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -18,19 +18,31 @@ export function DashboardNav() {
     <nav className="border-b">
       <div className="flex h-16 items-center px-4">
         <div className="flex items-center space-x-4">
-          <Link href="/dashboard">
+          <Link href="/">
             <Button variant="ghost" size="sm">
               <LayoutDashboard className="mr-2 h-4 w-4" />
-              Dashboard
+              Home
             </Button>
           </Link>
-          <Link href="/dashboard/tasks">
+          <Link href="/meine-angebote">
             <Button variant="ghost" size="sm">
               <CheckSquare className="mr-2 h-4 w-4" />
-              Tasks
+              Meine Angebote
             </Button>
           </Link>
-          <Link href="/dashboard/settings">
+          <Link href="/meine-verleihungen">
+            <Button variant="ghost" size="sm">
+              <CheckSquare className="mr-2 h-4 w-4" />
+              Meine Verleihungen
+            </Button>
+          </Link>
+          <Link href="/meine-anfragen">
+            <Button variant="ghost" size="sm">
+              <CheckSquare className="mr-2 h-4 w-4" />
+              Meine Anfragen
+            </Button>
+          </Link>
+          <Link href="/settings">
             <Button variant="ghost" size="sm">
               <Settings className="mr-2 h-4 w-4" />
               Settings

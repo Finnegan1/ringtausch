@@ -38,7 +38,6 @@ export default async function DashboardPage() {
               />
             </CardContent>
           </Card>
-          {/* Add more cards for different dashboard sections */}
         </div>
       </main>
     </div>
