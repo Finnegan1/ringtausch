@@ -13,9 +13,9 @@ A modern Next.js application showcasing authentication, task management, and the
 
 ## Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - PostgreSQL
-    - use a local docker-instance or use a free remote instance from [supabase](https://supabase.com) or [tembo](https://tembo.io)
+  - use a local docker-instance or use a free remote instance from [supabase](https://supabase.com) or [tembo](https://tembo.io)
 - MinIO server (for file storage)
 
 ## Environment Variables
@@ -61,6 +61,7 @@ src/
 └── middleware.ts # Authentication middleware
 prisma/schema.prisma # Database schema
 ```
+
 ## Authentication
 
 The project uses `better-auth` for authentication. Protected routes are handled by the middleware, which redirects unauthenticated users to the sign-in page.
@@ -68,6 +69,7 @@ The project uses `better-auth` for authentication. Protected routes are handled 
 ## Styling
 
 The project uses Tailwind CSS with shadcn/ui components. Theme configuration can be found in:
+
 - `tailwind.config.ts`
 - `src/app/globals.css`
 
