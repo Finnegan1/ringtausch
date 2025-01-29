@@ -13,9 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/**
- * Tauschring User Model
- */
+// Tauschring User Model
 model User {
   id            String  @id
   name          String // this is the username for the login
@@ -29,7 +27,7 @@ model User {
   houseNumber String
   postalCode  String
   city        String // ideally inferred from postal code
-  // geoLocation String // todo implement later
+  geoLocation String? // todo implement later
 
   createdAt DateTime
   updatedAt DateTime
@@ -89,9 +87,7 @@ model Verification {
   @@map("verification")
 }
 
-/**
- * Items are things that can be borrowed
- */
+// Items are things that can be borrowed
 model Item {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -112,11 +108,9 @@ model Item {
   @@map("items")
 }
 
-/**
- * Blocker marks the time when an item is blocked,
- * i.e. the owner doesn't want to lend it
- * within the given time frame
- */
+// Blocker marks the time when an item is blocked,
+// i.e. the owner doesn't want to lend it
+// within the given time frame
 model Blocker {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -130,10 +124,8 @@ model Blocker {
   @@map("blockers")
 }
 
-/**
- * Loan marks the desire of a user to borrow an item in the first place
- * and can be converted into a loan if the owner approves
- */
+// Loan marks the desire of a user to borrow an item in the first place
+// and can be converted into a loan if the owner approves
 model Loan {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
