@@ -65,5 +65,3 @@ export const Typography = ({ variant, children, className, ...props }: Typograph
     </Component>
   );
 };
-
-export default Typography;
