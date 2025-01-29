@@ -1,6 +1,13 @@
 "use client";
 
-import { CheckSquare, LayoutDashboard, LogOut, Settings } from "lucide-react";
+import {
+  Archive,
+  HandCoins,
+  HeartHandshake,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -19,38 +26,38 @@ export function NavBar() {
     <nav className="border-b">
       <div className="flex h-16 items-center px-4">
         <div className="flex items-center space-x-4">
-          <Link href="/">
+          <Link href="/" prefetch={true}>
             <Button variant="ghost" size="sm">
               <LayoutDashboard className="mr-2 h-4 w-4" />
               Home
             </Button>
           </Link>
-          <Link href="/meine-angebote">
+          <Link href="/meine-angebote" prefetch={true}>
             <Button variant="ghost" size="sm">
-              <CheckSquare className="mr-2 h-4 w-4" />
+              <Archive className="mr-2 h-4 w-4" />
               Meine Angebote
             </Button>
           </Link>
-          <Link href="/meine-verleihungen">
+          <Link href="/meine-verleihungen" prefetch={true}>
             <Button variant="ghost" size="sm">
-              <CheckSquare className="mr-2 h-4 w-4" />
+              <HandCoins className="mr-2 h-4 w-4" />
               Meine Verleihungen
             </Button>
           </Link>
-          <Link href="/meine-anfragen">
+          <Link href="/meine-anfragen" prefetch={true}>
             <Button variant="ghost" size="sm">
-              <CheckSquare className="mr-2 h-4 w-4" />
+              <HeartHandshake className="mr-2 h-4 w-4" />
               Meine Anfragen
             </Button>
           </Link>
-          <Link href="/settings">
+        </div>
+        <div className="ml-auto">
+          <Link href="/settings" prefetch={true}>
             <Button variant="ghost" size="sm">
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </Button>
           </Link>
-        </div>
-        <div className="ml-auto">
           <Button variant="ghost" size="sm" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
             Sign out
