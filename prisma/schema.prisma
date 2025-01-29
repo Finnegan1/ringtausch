@@ -13,6 +13,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/**
+ * Tauschring User Model
+ */
+model User {
+  id            String  @id
+  name          String // this is the username for the login
+  firstName     String
+  lastName      String
+  email         String
+  emailVerified Boolean
+  image         String? // URL
+
+  street      String
+  houseNumber String
+  postalCode  String
+  city        String // ideally inferred from postal code
+  // geoLocation String // todo implement later
+
+  createdAt DateTime
+  updatedAt DateTime
+  sessions  Session[]
+  accounts  Account[]
+
+  Items Item[]
+  Loans Loan[]
+
+  @@unique([email])
+  @@unique([name])
+  @@map("user")
+}
+
 model Session {
   id        String   @id
   expiresAt DateTime
@@ -56,37 +87,6 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
-}
-
-/**
- * Tauschring User Model
- */
-model User {
-  id            String  @id
-  name          String // this is the username for the login
-  firstName     String
-  lastName      String
-  email         String
-  emailVerified Boolean
-  image         String? // URL
-
-  street      String
-  houseNumber String
-  postalCode  String
-  city        String // ideally inferred from postal code
-  // geoLocation String // todo implement later
-
-  createdAt DateTime
-  updatedAt DateTime
-  sessions  Session[]
-  accounts  Account[]
-
-  Items Item[]
-  Loans Loan[]
-
-  @@unique([email])
-  @@unique([name])
-  @@map("user")
 }
 
 /**
