@@ -3,8 +3,8 @@
 import { Task } from "@prisma/client";
 import { createTask, updateCompleatStatus } from "./taskActions";
 import { useState } from "react";
-import { TaskForm } from "@/components/task-form";
-import { TaskList } from "@/components/task-list";
+import { TaskForm } from "@/components/tasks/task-form";
+import { TaskList } from "@/components/tasks/task-list";
 
 export default function TasksClientPage({ tasks }: { tasks: Task[] }) {
   const [currentTasks, setCurrentTasks] = useState<Task[]>(tasks);

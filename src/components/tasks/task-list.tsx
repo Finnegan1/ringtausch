@@ -1,14 +1,10 @@
 "use client";
 
-// Remove the import of Selectable from Kysely
-// import { Selectable } from "kysely";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-// Import the Task type from Prisma
 import { Task } from "@prisma/client";
 
 interface TaskListProps {
-  // Use the Task type from Prisma
   tasks: Task[];
   onCheckedChange: (taskId: number, checked: boolean) => void;
 }

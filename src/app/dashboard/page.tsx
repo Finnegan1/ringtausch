@@ -1,10 +1,19 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import minioClient from "@/lib/minio-client"
-import Image from "next/image"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import minioClient from "@/lib/minio-client";
+import Image from "next/image";
 
 export default async function DashboardPage() {
-
-  const url = await minioClient.presignedGetObject("images", "digitally-generated-image-of-isometric-data-chart.webp", 3600)
+  const url = await minioClient.presignedGetObject(
+    "images",
+    "digitally-generated-image-of-isometric-data-chart.webp",
+    36000
+  );
 
   return (
     <div>
@@ -14,12 +23,13 @@ export default async function DashboardPage() {
             <CardHeader>
               <CardTitle>Welcome to your Dashboard</CardTitle>
               <CardDescription>
-                This is your dashboard where you can manage your account and settings.
+                This is your dashboard where you can manage your account and
+                settings.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <p>Your dashboard content goes here.</p>
-              <Image 
+              <Image
                 src={url}
                 alt="Dashboard Image"
                 width={1200}
@@ -32,5 +42,5 @@ export default async function DashboardPage() {
         </div>
       </main>
     </div>
-  )
-} 
+  );
+}
