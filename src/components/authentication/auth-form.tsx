@@ -39,7 +39,7 @@ export function AuthForm({ mode }: AuthFormProps) {
       } else {
         await authClient.signIn.email({ email, password });
       }
-      router.push("/dashboard");
+      router.push("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
