@@ -13,19 +13,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/**
+ * Tauschring User Model
+ */
 model User {
-  id            String    @id
-  name          String
+  id            String  @id
+  name          String // this is the username for the login
+  firstName     String
+  lastName      String
   email         String
   emailVerified Boolean
-  image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
-  Task          Task[]
+  image         String? // URL
+
+  street      String
+  houseNumber String
+  postalCode  String
+  city        String // ideally inferred from postal code
+  // geoLocation String // todo implement later
+
+  createdAt DateTime
+  updatedAt DateTime
+  sessions  Session[]
+  accounts  Account[]
+
+  Items Item[]
+  Loans Loan[]
 
   @@unique([email])
+  @@unique([name])
   @@map("user")
 }
 
@@ -74,15 +89,75 @@ model Verification {
   @@map("verification")
 }
 
-model Task {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String?
-  completed   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+/**
+ * Items are things that can be borrowed
+ */
+model Item {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
 
-  @@map("tasks")
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String?
+  picture     String? // URL
+
+  isActive  Boolean @default(true) // to be set if the owner doesn't want to lend it but doesn't want to delete it
+  isDeleted Boolean @default(false) // to be set if the owner "deletes" the item
+
+  blockers Blocker[] // we accept redundant information here for easier querying
+  Loans    Loan[]
+
+  @@map("items")
+}
+
+/**
+ * Blocker marks the time when an item is blocked,
+ * i.e. the owner doesn't want to lend it
+ * within the given time frame
+ */
+model Blocker {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  startAt DateTime // we accept redundant information here for easier querying
+  endAt   DateTime
+
+  itemId Int
+  Item   Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@map("blockers")
+}
+
+/**
+ * Loan marks the desire of a user to borrow an item in the first place
+ * and can be converted into a loan if the owner approves
+ */
+model Loan {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  itemId     Int
+  item       Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  borrowerId String
+  borrower   User   @relation(fields: [borrowerId], references: [id], onDelete: Cascade)
+  // you might want to add a lender field here
+  // that would be redundant though, as the item owner is the lender
+
+  borrowerMessage String // "welcome message" (initial) from the borrower to the lender
+
+  startAt     DateTime
+  endAt       DateTime
+  isInContact Boolean  @default(false) // marks if the borrower and lender shared contact information
+  isApproved  Boolean  @default(false) // marks if the lender has approved the query
+  isBorrowed  Boolean  @default(false) // marks that the borrower has the item (to be set only by the borrower)
+  isFinished  Boolean  @default(false) // marks that the loaner received the item back (to be set only by the loaner)
+
+  loanerSatisfaction          Int? // 0-5 - only set if the loan is finished
+  borrowerSatisfaction        Int? // 0-5 - only set if the loan is finished
+  loanerSatisfactionMessage   String? // only set if the loan is finished
+  borrowerSatisfactionMessage String? // only set if the loan is finished
+
+  @@map("loans")
 }
