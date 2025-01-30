@@ -36,18 +36,22 @@ interface DataTableProps<TData, TValue> {
  * - Column visibility toggle
  * - Responsive design
  *
+ * Has to be used in a client component, because passing handler functions from RSC to client components is not possible.
+ *
  * @example
  * ```tsx
  * // Define your columns
  * const columns: ColumnDef<YourDataType>[] = [
  *   {
  *     accessorKey: "name",
+ *     id: "Name",
  *     header: ({ column }) => (
  *       <DataTableColumnHeader column={column} title="Name" />
  *     ),
  *   },
  *   {
  *     accessorKey: "email",
+ *     id: "Email",
  *     header: ({ column }) => (
  *       <DataTableColumnHeader column={column} title="Email" />
  *     ),
@@ -62,6 +66,7 @@ interface DataTableProps<TData, TValue> {
  *     <FullDataTable
  *       columns={columns}
  *       data={data}
+ *       onRowClick((row) => console.log(row))
  *     />
  *   );
  * }
