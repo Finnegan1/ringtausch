@@ -3,6 +3,7 @@
 import {
   ColumnDef,
   ColumnFiltersState,
+  Row,
   SortingState,
   getCoreRowModel,
   getFilteredRowModel,
@@ -22,6 +23,7 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  onRowClick?: (row: Row<TData>) => void;
 }
 
 /**
@@ -67,9 +69,14 @@ interface DataTableProps<TData, TValue> {
  *
  * @param props.columns - Array of column definitions using TanStack Table's ColumnDef
  * @param props.data - Array of data objects to display in the table
+ * @param props.onRowClick - Function to run if a row is clicked on
  * @returns A fully featured data table component with sorting, filtering, and pagination
  */
-export function FullDataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function FullDataTable<TData, TValue>({
+  columns,
+  data,
+  onRowClick,
+}: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
@@ -94,7 +101,11 @@ export function FullDataTable<TData, TValue>({ columns, data }: DataTableProps<T
         <DataTableFilterOptions table={table} data={data} />
         <DataTableViewOptions table={table} />
       </div>
-      <DataTable table={table} className="my-4" />
+      <DataTable
+        table={table}
+        onRowClick={(row) => onRowClick && onRowClick(row)}
+        className="my-4"
+      />
       <DataTablePagination table={table} />
     </div>
   );

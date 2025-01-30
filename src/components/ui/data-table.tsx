@@ -1,6 +1,6 @@
 "use client";
 
-import { Column, Table as TanTable, flexRender } from "@tanstack/react-table";
+import { Column, Row, Table as TanTable, flexRender } from "@tanstack/react-table";
 import {
   ArrowDown,
   ArrowUp,
@@ -39,9 +39,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 
 interface DataTableProps<TData> extends HTMLAttributes<HTMLDivElement> {
   table: TanTable<TData>;
+  onRowClick?: (entrie: Row<TData>) => void;
 }
 
-export function DataTable<TData>({ table, className, ...divProps }: DataTableProps<TData>) {
+export function DataTable<TData>({
+  table,
+  onRowClick,
+  className,
+  ...divProps
+}: DataTableProps<TData>) {
   return (
     <div className={cn("rounded-md border", className)} {...divProps}>
       <Table>
@@ -63,7 +69,11 @@ export function DataTable<TData>({ table, className, ...divProps }: DataTablePro
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+                onClick={() => onRowClick && onRowClick(row)}
+              >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -97,6 +107,7 @@ interface DataTableColumnHeaderProps<TData, TValue> extends HTMLAttributes<HTMLD
  * export const columns = [
  *   {
  *     accessorKey: "email",
+ *     id: "Email"
  *     header: ({ column }) => (
  *       <DataTableColumnHeader column={column} title="Email" />
  *     ),
@@ -278,23 +289,25 @@ interface DataTableFilterOptionsProps<TData> {
 }
 
 /**
- * View Options for a Data Table
+ * Filter Options for Data Table
+ *
+ * Uses column id as description in Dropdown => in column definition match header title and id of column
  */
 export function DataTableFilterOptions<TData>({ table, data }: DataTableFilterOptionsProps<TData>) {
   const [sortingFor, setSortingFor] = useState<string>("");
   const [filterInput, setFilterInput] = useState<string>("");
 
-  const columnsAccessKeys = table.getAllColumns().reduce((acc, col) => {
-    // @ts-expect-error - accessorKey may not exist on ColumnDef
-    const key = col.columnDef.accessorKey;
-    if (!key || !data[0]) return acc;
-    // @ts-expect-error - key may not index data[0]
-    const value = data[0][key];
-    if (typeof value === "string" || typeof value === "number") {
-      return [...acc, key];
-    }
-    return acc;
-  }, [] as string[]);
+  const columnsAccessKeys = table
+    .getAllColumns()
+    .filter((column) => {
+      if (data.length === 0) return true;
+      if (!column.accessorFn) return false;
+      const sampleValue = column.accessorFn(data[0], 0);
+      return typeof sampleValue === "string" || typeof sampleValue === "number";
+    })
+    .map((column) => {
+      return column.id;
+    });
 
   const saveSetSortingFor = useCallback(
     (key: string) => {
