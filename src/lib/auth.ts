@@ -10,4 +10,36 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  user: {
+    additionalFields: {
+      firstName: {
+        type: "string",
+        required: true,
+      },
+      lastName: {
+        type: "string",
+        required: true,
+      },
+      street: {
+        type: "string",
+        required: true,
+      },
+      houseNumber: {
+        type: "string",
+        required: true,
+      },
+      postalCode: {
+        type: "string",
+        required: true,
+      },
+      city: {
+        type: "string",
+        required: true,
+      },
+      geoLocation: {
+        type: "string",
+        required: false,
+      },
+    },
+  },
 });
