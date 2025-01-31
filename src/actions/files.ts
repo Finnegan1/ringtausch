@@ -10,7 +10,7 @@ import { minioClient } from "@/lib/minio-client";
  * Get a presigned URL for uploading a file to a bucket
  * Can be used with the function `uploadFile` to upload a file to a bucket
  * @param bucket - The bucket to upload the file to
- * @param fileId - The file ID to upload the file to
+ * @param fileId - The ID the file will have in the bucket
  * @returns The presigned URL and the file ID
  */
 export async function signedUploadUrl(
