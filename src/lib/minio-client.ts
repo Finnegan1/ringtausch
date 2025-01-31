@@ -1,4 +1,5 @@
 import * as Minio from "minio";
+import "server-only";
 
 const minioClient = new Minio.Client({
   endPoint: process.env.MINIO_ENDPOINT || "localhost",
@@ -8,4 +9,4 @@ const minioClient = new Minio.Client({
   secretKey: process.env.MINIO_SECRET_KEY || "",
 });
 
-export default minioClient;
+export { minioClient };
