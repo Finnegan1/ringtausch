@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import minioClient from "@/lib/minio-client";
+import { minioClient } from "@/lib/minio-client";
 
 export default async function DashboardPage() {
   const url = await minioClient.presignedGetObject(
@@ -9,6 +9,8 @@ export default async function DashboardPage() {
     "digitally-generated-image-of-isometric-data-chart.webp",
     36000
   );
+
+  console.log(url);
 
   return (
     <div>
