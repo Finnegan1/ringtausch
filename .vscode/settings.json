@@ -2,7 +2,8 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
   },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -16,7 +17,10 @@
   "editor.tabSize": 2,
   "files.eol": "\n",
   "prettier.requireConfig": true,
-  "prettier.configPath": ".prettierrc",
+  "prettier.configPath": ".prettierrc.json",
+  "editor.insertSpaces": true,
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
   }

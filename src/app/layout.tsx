@@ -5,7 +5,6 @@ import { NuqsAdapter } from "nuqs/adapters/next";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 
 import "./globals.css";
-import "./globals.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
