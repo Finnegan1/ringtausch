@@ -21,7 +21,7 @@ model User {
   lastName      String
   email         String
   emailVerified Boolean
-  image         String? // URL
+  image         String // URL
 
   street      String
   houseNumber String
@@ -96,8 +96,8 @@ model Item {
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   name        String
-  description String?
-  picture     String? // URL
+  description String
+  pictures    String[] // URLs
 
   isActive  Boolean @default(true) // to be set if the owner doesn't want to lend it but doesn't want to delete it
   isDeleted Boolean @default(false) // to be set if the owner "deletes" the item
