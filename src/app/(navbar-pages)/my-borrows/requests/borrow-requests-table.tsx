@@ -3,7 +3,7 @@
 import { Row } from "@tanstack/react-table";
 import { useState } from "react";
 
-import { ConfirmationPopup } from "@/components/ConformationPopup";
+import { ConfirmationPopup } from "@/components/ConfirmationPopup";
 import { LoanDetailsSheet } from "@/components/LoanDetailsSheet";
 import { RatingPopup } from "@/components/RatingPopup";
 import { FullDataTable } from "@/components/general/full-data-table";
@@ -15,9 +15,10 @@ import { getColumns } from "./columns";
 
 interface TableSectionProps {
   data: MyBorrows[];
+  refreshData: () => void; // Function to refresh data
 }
 
-export function BorrowRequestsTable({ data }: TableSectionProps) {
+export function BorrowRequestsTable({ data, refreshData }: TableSectionProps) {
   const [selectedLoan, setSelectedLoan] = useState<MyBorrows | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isRatingPopupOpen, setIsRatingPopupOpen] = useState(false);
@@ -53,6 +54,7 @@ export function BorrowRequestsTable({ data }: TableSectionProps) {
     if (loanToDelete) {
       await deleteBorrowRequest(loanToDelete);
       console.log("Deleted loan:", loanToDelete);
+      refreshData(); // Refresh data after delete
     }
     setIsDeletePopupOpen(false);
   };
@@ -61,6 +63,7 @@ export function BorrowRequestsTable({ data }: TableSectionProps) {
     if (loanToConfirm) {
       await confirmBorrow(loanToConfirm);
       console.log("Confirmed borrow:", loanToConfirm);
+      refreshData(); // Refresh data after confirm
     }
     setIsConfirmPopupOpen(false);
   };
@@ -83,7 +86,10 @@ export function BorrowRequestsTable({ data }: TableSectionProps) {
 
       <RatingPopup
         isOpen={isRatingPopupOpen}
-        onClose={() => setIsRatingPopupOpen(false)}
+        onClose={() => {
+          setIsRatingPopupOpen(false);
+          refreshData(); // Refresh after rating
+        }}
         apiUrl="/api/my-borrows/rate"
         loanId={selectedLoanId ?? 0}
       />

@@ -19,9 +19,7 @@ export default function MyBorrowRequests() {
     try {
       const response = await fetch(`/api/my-borrows/get-my-borrows?filter=${activeTab}`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
       if (!response.ok) {
         throw new Error("Failed to fetch data");
@@ -40,6 +38,7 @@ export default function MyBorrowRequests() {
     fetchData();
   }, [activeTab]);
 
+  // Pass refreshData function to child component
   return (
     <div className="mx-10 mt-6">
       {/* Tab Navigation */}
@@ -72,7 +71,7 @@ export default function MyBorrowRequests() {
 
       {loading && <div>Loading...</div>}
       {error && <div>Error: {error}</div>}
-      {data && <BorrowRequestsTable data={data} />}
+      {data && <BorrowRequestsTable data={data} refreshData={fetchData} />}
     </div>
   );
 }
