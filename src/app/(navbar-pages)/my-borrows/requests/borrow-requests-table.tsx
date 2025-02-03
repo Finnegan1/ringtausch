@@ -3,6 +3,7 @@
 import { Row } from "@tanstack/react-table";
 import { useState } from "react";
 
+import { ConfirmationPopup } from "@/components/ConformationPopup";
 import { LoanDetailsSheet } from "@/components/LoanDetailsSheet";
 import { RatingPopup } from "@/components/RatingPopup";
 import { FullDataTable } from "@/components/general/full-data-table";
@@ -21,6 +22,10 @@ export function BorrowRequestsTable({ data }: TableSectionProps) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isRatingPopupOpen, setIsRatingPopupOpen] = useState(false);
   const [selectedLoanId, setSelectedLoanId] = useState<number | null>(null);
+  const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(false);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [loanToConfirm, setLoanToConfirm] = useState<number | null>(null);
+  const [loanToDelete, setLoanToDelete] = useState<number | null>(null);
 
   const handleRowClick = (row: Row<MyBorrows>) => {
     setSelectedLoan(row.original);
@@ -32,22 +37,38 @@ export function BorrowRequestsTable({ data }: TableSectionProps) {
     setIsRatingPopupOpen(true);
   };
 
-  const handleDelete = async (loanId: number, event: React.MouseEvent) => {
+  const openConfirmPopup = (loanId: number, event: React.MouseEvent) => {
     event.stopPropagation();
-    deleteBorrowRequest(loanId);
-    console.log("Deleting loan:", loanId);
+    setLoanToConfirm(loanId);
+    setIsConfirmPopupOpen(true);
   };
 
-  const handleUserCheck = async (loanId: number, event: React.MouseEvent) => {
+  const openDeletePopup = (loanId: number, event: React.MouseEvent) => {
     event.stopPropagation();
-    confirmBorrow(loanId);
-    console.log("Confirming borrow:", loanId);
+    setLoanToDelete(loanId);
+    setIsDeletePopupOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (loanToDelete) {
+      await deleteBorrowRequest(loanToDelete);
+      console.log("Deleted loan:", loanToDelete);
+    }
+    setIsDeletePopupOpen(false);
+  };
+
+  const handleUserCheck = async () => {
+    if (loanToConfirm) {
+      await confirmBorrow(loanToConfirm);
+      console.log("Confirmed borrow:", loanToConfirm);
+    }
+    setIsConfirmPopupOpen(false);
   };
 
   return (
     <div className="mt-6">
       <FullDataTable
-        columns={getColumns(openRatingPopup, handleDelete, handleUserCheck)}
+        columns={getColumns(openRatingPopup, openDeletePopup, openConfirmPopup)}
         data={data}
         onRowClick={handleRowClick}
       />
@@ -65,6 +86,22 @@ export function BorrowRequestsTable({ data }: TableSectionProps) {
         onClose={() => setIsRatingPopupOpen(false)}
         apiUrl="/api/my-borrows/rate"
         loanId={selectedLoanId ?? 0}
+      />
+
+      {/* Confirm Borrow Popup */}
+      <ConfirmationPopup
+        isOpen={isConfirmPopupOpen}
+        onClose={() => setIsConfirmPopupOpen(false)}
+        message="Bist du sicher, dass du diese Ausleihe bestätigen möchtest?"
+        onConfirm={handleUserCheck}
+      />
+
+      {/* Delete Borrow Request Popup */}
+      <ConfirmationPopup
+        isOpen={isDeletePopupOpen}
+        onClose={() => setIsDeletePopupOpen(false)}
+        message="Bist du sicher, dass du diese Leihanfrage löschen möchtest?"
+        onConfirm={handleDelete}
       />
     </div>
   );
