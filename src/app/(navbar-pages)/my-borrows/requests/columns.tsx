@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { de } from "date-fns/locale";
-import { Star, StarHalf } from "lucide-react";
+import { Star, StarHalf, Trash, UserCheck } from "lucide-react";
 import Image from "next/image";
 
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +26,12 @@ export type MyBorrows = {
   };
 };
 
-export const getColumns = (openRatingPopup: (loanId: number) => void): ColumnDef<MyBorrows>[] => [
+// Function to generate columns, taking openRatingPopup as a parameter
+export const getColumns = (
+  openRatingPopup: (loanId: number) => void,
+  handleDelete: (loanId: number, event: React.MouseEvent) => void,
+  handleUserCheck: (loanId: number, event: React.MouseEvent) => void
+): ColumnDef<MyBorrows>[] => [
   {
     accessorFn: (row) => row.item.picture,
     id: "Bild",
@@ -120,11 +125,27 @@ export const getColumns = (openRatingPopup: (loanId: number) => void): ColumnDef
     cell: ({ row }) => {
       const {
         id: loanId,
+        isApproved,
+        isInContact,
+        isBorrowed,
         isFinished,
         borrowerSatisfaction,
         borrowerSatisfactionMessage,
       } = row.original;
 
+      if (isApproved && isInContact && !isBorrowed && !isFinished) {
+        return (
+          <button
+            onClick={(event) => handleUserCheck(loanId, event)}
+            className="flex items-center space-x-2 text-green-500"
+          >
+            <UserCheck />
+          </button>
+        );
+      }
+      if (isBorrowed && !isFinished) {
+        return <div />;
+      }
       if (isFinished && borrowerSatisfaction === null && borrowerSatisfactionMessage === null) {
         return (
           <button
@@ -147,7 +168,14 @@ export const getColumns = (openRatingPopup: (loanId: number) => void): ColumnDef
           </Badge>
         );
       }
-      return null;
+      return (
+        <button
+          onClick={(event) => handleDelete(loanId, event)}
+          className="flex items-center space-x-2 text-red-500"
+        >
+          <Trash />
+        </button>
+      );
     },
   },
 ];

@@ -7,6 +7,8 @@ import { LoanDetailsSheet } from "@/components/LoanDetailsSheet";
 import { RatingPopup } from "@/components/RatingPopup";
 import { FullDataTable } from "@/components/general/full-data-table";
 
+import { confirmBorrow } from "../actions/confirm-borrow";
+import { deleteBorrowRequest } from "../actions/delete-borrow-request";
 import type { MyBorrows } from "./columns";
 import { getColumns } from "./columns";
 
@@ -30,10 +32,22 @@ export function BorrowRequestsTable({ data }: TableSectionProps) {
     setIsRatingPopupOpen(true);
   };
 
+  const handleDelete = async (loanId: number, event: React.MouseEvent) => {
+    event.stopPropagation();
+    deleteBorrowRequest(loanId);
+    console.log("Deleting loan:", loanId);
+  };
+
+  const handleUserCheck = async (loanId: number, event: React.MouseEvent) => {
+    event.stopPropagation();
+    confirmBorrow(loanId);
+    console.log("Confirming borrow:", loanId);
+  };
+
   return (
     <div className="mt-6">
       <FullDataTable
-        columns={getColumns(openRatingPopup)}
+        columns={getColumns(openRatingPopup, handleDelete, handleUserCheck)}
         data={data}
         onRowClick={handleRowClick}
       />
@@ -51,9 +65,6 @@ export function BorrowRequestsTable({ data }: TableSectionProps) {
         onClose={() => setIsRatingPopupOpen(false)}
         apiUrl="/api/my-borrows/rate"
         loanId={selectedLoanId ?? 0}
-        onSubmit={(rating, message) => {
-          console.log("Rating submitted:", rating, message);
-        }}
       />
     </div>
   );
