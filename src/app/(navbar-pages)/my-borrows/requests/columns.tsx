@@ -1,25 +1,13 @@
-"use client";
-
 import { ColumnDef } from "@tanstack/react-table";
 import { de } from "date-fns/locale";
-import { Star, StarHalf, Trash, UserCheck } from "lucide-react";
+import { Star, StarHalf } from "lucide-react";
 import Image from "next/image";
 
+import { Badge } from "@/components/ui/badge";
 import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Time } from "@/components/ui/time";
 
-/*
-export type Requests = Omit<
-  Prisma.LoanGetPayload<{
-    include: {
-      item: { select: { name: true } };
-    };
-  }>,
-  "item"
-> & {
-  name: string;
-};*/
-export type Requests = {
+export type MyBorrows = {
   id: number;
   createdAt: Date;
   startAt: Date;
@@ -28,13 +16,17 @@ export type Requests = {
   isInContact: boolean;
   isBorrowed?: boolean;
   isFinished?: boolean;
+  borrowerSatisfaction: number | null | undefined;
+  borrowerSatisfactionMessage?: string | null | undefined;
+  borrowerMessage?: string | null | undefined;
   item: {
     name: string;
     picture: string | null | undefined;
+    description: string | null | undefined;
   };
 };
 
-export const columns: ColumnDef<Requests>[] = [
+export const getColumns = (openRatingPopup: (loanId: number) => void): ColumnDef<MyBorrows>[] => [
   {
     accessorFn: (row) => row.item.picture,
     id: "Bild",
@@ -98,85 +90,64 @@ export const columns: ColumnDef<Requests>[] = [
     header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
     cell: ({ row }) => {
       const { isFinished, isBorrowed, isApproved, isInContact } = row.original;
-      let status = "Pending";
+      let status = "Angefragt";
+      let badgeClass = "bg-gray-200 text-gray-800";
 
       if (isFinished) {
-        status = "Beendet";
+        status = "Zurückgegeben";
+        badgeClass = "bg-green-200 text-green-800";
       } else if (isBorrowed) {
-        status = "In Durchführung";
+        status = "Ausgeliehen";
+        badgeClass = "bg-yellow-200 text-yellow-800";
       } else if (isApproved) {
         status = "Angenommen";
+        badgeClass = "bg-blue-200 text-blue-800";
       } else if (isInContact) {
         status = "In Kontakt";
+        badgeClass = "bg-purple-200 text-purple-800";
       }
 
-      return <div>{status}</div>;
+      return (
+        <Badge className={`rounded-full px-2 py-1 text-xs font-semibold ${badgeClass}`}>
+          {status}
+        </Badge>
+      );
     },
   },
   {
     id: "Aktionen",
     header: ({ column }) => <DataTableColumnHeader column={column} title="Aktionen" />,
     cell: ({ row }) => {
-      const { id: loanId, isApproved, isInContact, isBorrowed, isFinished } = row.original;
-      const handleDelete = async () => {
-        try {
-          const response = await fetch("/api/delete-borrow-request", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ loanId }),
-          });
-          if (!response.ok) {
-            throw new Error("Failed to delete loan");
-          }
-          const data = await response.json();
-          console.log(`Loan Request with ID: ${loanId} delete successfully.`, data);
-        } catch (error) {
-          console.error("Error deleting loan:", error);
-        }
-      };
-      const handleUserCheck = async () => {
-        console.log(`User check triggered for loan ID: ${loanId}`);
-        // Call your user-check function here
-      };
-      //const handleReturn = async () => {
-      //  console.log(`Return action triggered for loan ID: ${loanId}`);
-      //  // Call your return action function here
-      //};
-      const handleRating = async () => {
-        console.log(`Rating action triggered for loan ID: ${loanId}`);
-        // Call your return action function here
-      };
-      if (isApproved && isInContact && !isBorrowed && !isFinished) {
+      const {
+        id: loanId,
+        isFinished,
+        borrowerSatisfaction,
+        borrowerSatisfactionMessage,
+      } = row.original;
+
+      if (isFinished && borrowerSatisfaction === null && borrowerSatisfactionMessage === null) {
         return (
-          <button onClick={handleUserCheck} className="flex items-center space-x-2 text-green-500">
-            <UserCheck />
-          </button>
-        );
-      }
-      if (isBorrowed && !isFinished) {
-        return (
-          <div />
-          //<button onClick={handleReturn} className="flex items-center space-x-2 text-blue-500">
-          //  <span>Return</span>
-          //</button>
-        );
-      }
-      if (isFinished) {
-        return (
-          <button onClick={handleRating} className="flex items-center space-x-2 text-gray-500">
+          <button
+            onClick={(event) => {
+              event.stopPropagation();
+              openRatingPopup(loanId);
+            }}
+            className="flex items-center space-x-2 text-gray-500"
+          >
             <Star />
             <Star />
             <StarHalf />
           </button>
         );
       }
-      return (
-        <button onClick={handleDelete} className="flex items-center space-x-2 text-red-500">
-          <Trash />
-        </button>
-      );
+      if (isFinished && (borrowerSatisfaction != null || borrowerSatisfactionMessage != null)) {
+        return (
+          <Badge className="rounded-full bg-green-200 px-2 py-1 text-xs font-semibold text-green-800">
+            Bewertet 🎉
+          </Badge>
+        );
+      }
+      return null;
     },
   },
 ];

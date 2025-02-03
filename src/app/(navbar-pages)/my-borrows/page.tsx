@@ -1,91 +1,78 @@
-import { headers } from "next/headers";
+"use client";
 
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { useQueryState } from "nuqs";
+import { useEffect, useState } from "react";
 
 import { BorrowRequestsTable } from "./requests/borrow-requests-table";
+import { MyBorrows } from "./requests/columns";
 
-export default async function MyBorrowRequests() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+export default function MyBorrowRequests() {
+  // Available filters: "pending", "inProcess", "finished"
+  const [activeTab, setActiveTab] = useQueryState("tab", { defaultValue: "pending" });
+  const [data, setData] = useState<MyBorrows[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!session?.user?.id) {
-    throw new Error("User not logged in.");
-  }
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/my-borrows/get-my-borrows?filter=${activeTab}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+      const json = await response.json();
+      setData(json);
+    } catch {
+      setError("Something went wrong. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const loanRequests = await prisma.loan.findMany({
-    where: {
-      borrowerId: session.user.id,
-      isBorrowed: false,
-      isFinished: false,
-    },
-    select: {
-      id: true,
-      startAt: true,
-      endAt: true,
-      createdAt: true,
-      isApproved: true,
-      isInContact: true,
-      item: {
-        select: {
-          name: true,
-          picture: true,
-        },
-      },
-    },
-  });
-  const loanInProcess = await prisma.loan.findMany({
-    where: {
-      borrowerId: session.user.id,
-      isBorrowed: true,
-      isFinished: false,
-    },
-    select: {
-      id: true,
-      startAt: true,
-      endAt: true,
-      createdAt: true,
-      isApproved: true,
-      isInContact: true,
-      isBorrowed: true,
-      isFinished: true,
-      item: {
-        select: {
-          name: true,
-          picture: true,
-        },
-      },
-    },
-  });
-  const loanFinished = await prisma.loan.findMany({
-    where: {
-      borrowerId: session.user.id,
-      isFinished: true,
-    },
-    select: {
-      id: true,
-      startAt: true,
-      endAt: true,
-      createdAt: true,
-      isApproved: true,
-      isInContact: true,
-      isBorrowed: true,
-      isFinished: true,
-      item: {
-        select: {
-          name: true,
-          picture: true,
-        },
-      },
-    },
-  });
+  // Re-fetch data whenever the active tab changes.
+  useEffect(() => {
+    fetchData();
+  }, [activeTab]);
 
   return (
     <div className="mx-10 mt-6">
-      <BorrowRequestsTable data={loanRequests} />
-      <BorrowRequestsTable data={loanInProcess} />
-      <BorrowRequestsTable data={loanFinished} />
+      {/* Tab Navigation */}
+      <div className="mb-4 flex space-x-4">
+        <button
+          onClick={() => setActiveTab("pending")}
+          className={`rounded px-4 py-2 ${
+            activeTab === "pending" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
+          }`}
+        >
+          Angefragt
+        </button>
+        <button
+          onClick={() => setActiveTab("inProcess")}
+          className={`rounded px-4 py-2 ${
+            activeTab === "inProcess" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
+          }`}
+        >
+          Ausgeliehen
+        </button>
+        <button
+          onClick={() => setActiveTab("finished")}
+          className={`rounded px-4 py-2 ${
+            activeTab === "finished" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
+          }`}
+        >
+          Zurückgegeben
+        </button>
+      </div>
+
+      {loading && <div>Loading...</div>}
+      {error && <div>Error: {error}</div>}
+      {data && <BorrowRequestsTable data={data} />}
     </div>
   );
 }
