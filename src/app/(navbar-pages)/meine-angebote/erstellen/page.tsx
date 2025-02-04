@@ -2,16 +2,16 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
-import { Loader2, X } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import prettyBytes from "pretty-bytes";
 import { useState } from "react";
-import { ErrorCode } from "react-dropzone";
+import { ErrorCode, FileRejection } from "react-dropzone";
 import { useFieldArray, useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { signedUploadUrl } from "@/actions/files";
 import { createItem } from "@/actions/items";
+import { FileListEntry } from "@/components/general/FileListEntrie";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -22,17 +22,7 @@ import {
   DropzoneUploadIcon,
   DropzoneZone,
 } from "@/components/ui/dropzone";
-import {
-  FileList,
-  FileListAction,
-  FileListDescription,
-  FileListHeader,
-  FileListIcon,
-  FileListInfo,
-  FileListItem,
-  FileListName,
-  FileListSize,
-} from "@/components/ui/file-list";
+import { FileList } from "@/components/ui/file-list";
 import {
   Form,
   FormControl,
@@ -46,33 +36,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { uploadFile } from "@/lib/utils";
-
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-
-const formSchema = z.object({
-  name: z.string().min(3, "Name muss mindestens 3 Zeichen lang sein"),
-  description: z.string().min(10, "Beschreibung muss mindestens 10 Zeichen lang sein"),
-  files: z
-    .array(
-      z.object({
-        file: z
-          .instanceof(File)
-          .refine((file) => file.size <= MAX_FILE_SIZE, "Datei überschreitet maximale Dateigröße")
-          .refine((file) => file.type.startsWith("image/"), "Nur Bilddateien sind erlaubt"),
-      })
-    )
-    .min(1, { message: "Mindestens eine Datei ist erforderlich." }),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import { ItemCreateSchema, MAX_FILE_SIZE, itemCreateSchema } from "@/schemas/item";
 
 export default function Erstellen() {
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<ItemCreateSchema>({
+    resolver: zodResolver(itemCreateSchema),
     defaultValues: {
       name: "",
       description: "",
@@ -85,7 +57,7 @@ export default function Erstellen() {
     name: "files",
   });
 
-  async function onSubmit(data: FormValues) {
+  async function onSubmit(data: ItemCreateSchema) {
     setIsSubmitting(true);
     try {
       const fileIds: string[] = [];
@@ -122,6 +94,24 @@ export default function Erstellen() {
       setIsSubmitting(false);
     }
   }
+
+  const onDropAccepted = (acceptedFiles: File[]) => {
+    acceptedFiles.forEach((file) => {
+      append({ file });
+    });
+  };
+
+  const onDropRejected = (fileRejections: FileRejection[]) => {
+    fileRejections.forEach((fileRejection) => {
+      if (fileRejection.errors.some((err) => err.code === ErrorCode.FileTooLarge)) {
+        toast({
+          variant: "destructive",
+          title: "Datei zu groß.",
+          description: `Datei '${fileRejection.file.name}' ist zu groß.`,
+        });
+      }
+    });
+  };
 
   return (
     <div className="">
@@ -197,22 +187,8 @@ export default function Erstellen() {
                 >
                   <Dropzone
                     maxSize={MAX_FILE_SIZE}
-                    onDropAccepted={(acceptedFiles) =>
-                      append(acceptedFiles.map((file) => ({ file })))
-                    }
-                    onDropRejected={(fileRejections) => {
-                      fileRejections.forEach((fileRejection) => {
-                        if (
-                          fileRejection.errors.some((err) => err.code === ErrorCode.FileTooLarge)
-                        ) {
-                          toast({
-                            variant: "destructive",
-                            title: "Datei zu groß.",
-                            description: `Datei '${fileRejection.file.name}' ist zu groß.`,
-                          });
-                        }
-                      });
-                    }}
+                    onDropAccepted={onDropAccepted}
+                    onDropRejected={onDropRejected}
                     accept={{ "image/*": [".jpg", ".jpeg", ".png"] }}
                   >
                     {({ maxSize }) => (
@@ -246,21 +222,13 @@ export default function Erstellen() {
                               <div className="grid gap-4">
                                 <FileList className="mt-4">
                                   {fields.map((field, index) => (
-                                    <FileListItem key={field.id}>
-                                      <FileListHeader>
-                                        <FileListIcon />
-                                        <FileListInfo>
-                                          <FileListName>{field.file.name}</FileListName>
-                                          <FileListDescription>
-                                            <FileListSize>{field.file.size}</FileListSize>
-                                          </FileListDescription>
-                                        </FileListInfo>
-                                        <FileListAction onClick={() => remove(index)}>
-                                          <X />
-                                          <span className="sr-only">Entfernen</span>
-                                        </FileListAction>
-                                      </FileListHeader>
-                                    </FileListItem>
+                                    <FileListEntry
+                                      key={field.id}
+                                      name={field.file.name}
+                                      size={field.file.size}
+                                      objectUrl={URL.createObjectURL(field.file)}
+                                      onRemove={() => remove(index)}
+                                    />
                                   ))}
                                 </FileList>
                               </div>

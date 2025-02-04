@@ -20,3 +20,7 @@ export async function uploadFile(file: File, presignedUrl: string) {
     throw new Error("Failed to upload file");
   }
 }
+
+export function getPublicItemImageUrl(bucket: string, imageId: string) {
+  return `${process.env.NEXT_PUBLIC_MINIO_URL}/${bucket}/${imageId}`;
+}
