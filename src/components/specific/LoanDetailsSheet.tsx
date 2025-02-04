@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-import type { MyBorrows } from "@/app/(navbar-pages)/my-borrows/requests/columns";
+import type { MyBorrows } from "@/components/specific/BorrowRequestsTable";
 import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
@@ -26,16 +26,16 @@ export function LoanDetailsSheet({ loan, isOpen, onClose }: LoanDetailsSheetProp
 
   if (isFinished) {
     status = "Zurückgegeben";
-    badgeClass = "bg-green-200 text-green-800";
+    badgeClass = "bg-green-200 hover:bg-green-200 text-green-800";
   } else if (isBorrowed) {
     status = "Ausgeliehen";
-    badgeClass = "bg-yellow-200 text-yellow-800";
+    badgeClass = "bg-yellow-200 hover:bg-yellow-200 text-yellow-800";
   } else if (isApproved) {
     status = "Angenommen";
-    badgeClass = "bg-blue-200 text-blue-800";
+    badgeClass = "bg-blue-200 hover:bg-blue-200 text-blue-800";
   } else if (isInContact) {
     status = "In Kontakt";
-    badgeClass = "bg-purple-200 text-purple-800";
+    badgeClass = "bg-purple-200 hover:bg-purple-200 text-purple-800";
   }
 
   return (
@@ -53,7 +53,7 @@ export function LoanDetailsSheet({ loan, isOpen, onClose }: LoanDetailsSheetProp
               <Image
                 width={128}
                 height={128}
-                src={loan.item.picture}
+                src={`${process.env.NEXT_PUBLIC_MINIO_URL}/public-item-images/${loan.item.picture.split(",")[0]}`}
                 alt="Artikelbild"
                 className="h-32 w-32 rounded-md object-cover shadow-lg"
               />
