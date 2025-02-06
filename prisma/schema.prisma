@@ -21,13 +21,12 @@ model User {
   lastName      String
   email         String
   emailVerified Boolean
-  image         String // URL
+  image         String? // URL
 
   street      String
   houseNumber String
   postalCode  String
   city        String // ideally inferred from postal code
-  geoLocation String? // todo implement later
 
   createdAt DateTime
   updatedAt DateTime

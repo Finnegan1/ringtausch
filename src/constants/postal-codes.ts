@@ -1,7 +1,7 @@
 import fs from "fs";
 
-type PostalCodes = {
-  [key: string]: { neighbors: string[]; name: string[] };
+export type PostalCodes = {
+  [key: string]: { neighbors: string[]; name: string };
 };
 
 const POSTAL_CODES_PATH = `${process.cwd()}/src/constants/postal-codes.json`;
