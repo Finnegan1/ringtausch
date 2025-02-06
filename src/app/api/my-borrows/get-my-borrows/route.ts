@@ -2,7 +2,7 @@
 
 import { NextResponse } from "next/server";
 
-import { MyBorrows } from "@/app/(navbar-pages)/my-borrows/requests/columns";
+import { MyBorrows } from "@/components/specific/BorrowRequestsTable";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -23,9 +23,10 @@ export async function GET(request: Request) {
   // Determine which query to execute based on the filter
   let data: MyBorrows[] = [];
   if (filter === "pending") {
-    data = await prisma.loan.findMany({
+    const dataWithoutContact = await prisma.loan.findMany({
       where: {
         borrowerId,
+        isInContact: false,
         isBorrowed: false,
         isFinished: false,
       },
@@ -48,6 +49,40 @@ export async function GET(request: Request) {
         },
       },
     });
+
+    const dataWithContact = await prisma.loan.findMany({
+      where: {
+        borrowerId,
+        isInContact: true,
+        isBorrowed: false,
+        isFinished: false,
+      },
+      select: {
+        id: true,
+        startAt: true,
+        endAt: true,
+        createdAt: true,
+        isApproved: true,
+        isInContact: true,
+        borrowerSatisfaction: true,
+        borrowerSatisfactionMessage: true,
+        borrowerMessage: true,
+        item: {
+          select: {
+            name: true,
+            picture: true,
+            description: true,
+            owner: {
+              select: {
+                email: true,
+                firstName: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    data = [...dataWithoutContact, ...dataWithContact];
   } else if (filter === "inProcess") {
     data = await prisma.loan.findMany({
       where: {
@@ -72,6 +107,12 @@ export async function GET(request: Request) {
             name: true,
             picture: true,
             description: true,
+            owner: {
+              select: {
+                email: true,
+                firstName: true,
+              },
+            },
           },
         },
       },
@@ -99,6 +140,12 @@ export async function GET(request: Request) {
             name: true,
             picture: true,
             description: true,
+            owner: {
+              select: {
+                email: true,
+                firstName: true,
+              },
+            },
           },
         },
       },

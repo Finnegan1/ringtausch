@@ -31,6 +31,10 @@ export type MyBorrows = {
     name: string;
     picture: string | null | undefined;
     description: string | null | undefined;
+    owner?: {
+      email: string;
+      firstName: string;
+    };
   };
 };
 

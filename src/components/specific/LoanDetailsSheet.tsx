@@ -101,8 +101,21 @@ export function LoanDetailsSheet({ loan, isOpen, onClose }: LoanDetailsSheetProp
             </div>
           </div>
 
-          <hr className="border-gray-200 dark:border-gray-700" />
+          {loan.isInContact && (
+            <>
+              <hr className="border-gray-200 dark:border-gray-700" />
+              <div className="grid grid-cols-2 gap-y-3">
+                <span className="font-medium text-gray-700 dark:text-gray-300">Vorname:</span>
+                <span className="text-gray-600 dark:text-gray-200">
+                  {loan.item.owner?.firstName}
+                </span>
 
+                <span className="font-medium text-gray-700 dark:text-gray-300">Email:</span>
+                <span className="text-gray-600 dark:text-gray-200">{loan.item.owner?.email}</span>
+              </div>
+            </>
+          )}
+          <hr className="border-gray-200 dark:border-gray-700" />
           {loan.borrowerMessage && (
             <div className="space-y-1">
               <h3 className="font-medium text-gray-700 dark:text-gray-300">Deine Nachricht:</h3>
