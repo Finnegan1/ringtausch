@@ -3,7 +3,6 @@
 import Image from "next/image";
 
 import type { MyBorrows } from "@/components/specific/BorrowRequestsTable";
-import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
   SheetContent,
@@ -13,6 +12,8 @@ import {
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 
+import { StatusBadge } from "../general/StatusBadge";
+
 interface LoanDetailsSheetProps {
   loan: MyBorrows;
   isOpen: boolean;
@@ -20,24 +21,6 @@ interface LoanDetailsSheetProps {
 }
 
 export function LoanDetailsSheet({ loan, isOpen, onClose }: LoanDetailsSheetProps) {
-  const { isFinished, isBorrowed, isApproved, isInContact } = loan;
-  let status = "Angefragt";
-  let badgeClass = "bg-gray-200 text-gray-800";
-
-  if (isFinished) {
-    status = "Zurückgegeben";
-    badgeClass = "bg-green-200 hover:bg-green-200 text-green-800";
-  } else if (isBorrowed) {
-    status = "Ausgeliehen";
-    badgeClass = "bg-yellow-200 hover:bg-yellow-200 text-yellow-800";
-  } else if (isApproved) {
-    status = "Angenommen";
-    badgeClass = "bg-blue-200 hover:bg-blue-200 text-blue-800";
-  } else if (isInContact) {
-    status = "In Kontakt";
-    badgeClass = "bg-purple-200 hover:bg-purple-200 text-purple-800";
-  }
-
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="sm:max-w-[425px]">
@@ -93,11 +76,12 @@ export function LoanDetailsSheet({ loan, isOpen, onClose }: LoanDetailsSheetProp
 
             <span className="font-medium text-gray-700 dark:text-gray-300">Status:</span>
             <div className="justify-self-start">
-              <Badge
-                className={`inline-flex items-center justify-center rounded-full px-2 py-1 text-xs font-semibold ${badgeClass}`}
-              >
-                {status}
-              </Badge>
+              <StatusBadge
+                isFinished={loan.isFinished}
+                isBorrowed={loan.isBorrowed}
+                isApproved={loan.isApproved}
+                isInContact={loan.isInContact}
+              />
             </div>
           </div>
 

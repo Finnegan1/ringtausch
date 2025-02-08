@@ -9,6 +9,7 @@ import { useState } from "react";
 import { confirmBorrow, deleteBorrowRequest } from "@/actions/loans";
 import { ConfirmationPopup } from "@/components/general/ConfirmationPopup";
 import { RatingPopup } from "@/components/general/RatingPopup";
+import { StatusBadge } from "@/components/general/StatusBadge";
 import { FullDataTable } from "@/components/general/full-data-table";
 import { LoanDetailsSheet } from "@/components/specific/LoanDetailsSheet";
 import { Badge } from "@/components/ui/badge";
@@ -22,8 +23,8 @@ export type MyBorrows = {
   endAt: Date;
   isApproved: boolean;
   isInContact: boolean;
-  isBorrowed?: boolean;
-  isFinished?: boolean;
+  isBorrowed: boolean;
+  isFinished: boolean;
   borrowerSatisfaction: number | null | undefined;
   borrowerSatisfactionMessage?: string | null | undefined;
   borrowerMessage?: string | null | undefined;
@@ -111,28 +112,13 @@ export const getColumns = (
     id: "Status",
     header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
     cell: ({ row }) => {
-      const { isFinished, isBorrowed, isApproved, isInContact } = row.original;
-      let status = "Angefragt";
-      let badgeClass = "bg-gray-200 text-gray-800";
-
-      if (isFinished) {
-        status = "Zurückgegeben";
-        badgeClass = "bg-green-200 hover:bg-green-200 text-green-800";
-      } else if (isBorrowed) {
-        status = "Ausgeliehen";
-        badgeClass = "bg-yellow-200 hover:bg-yellow-200 text-yellow-800";
-      } else if (isApproved) {
-        status = "Angenommen";
-        badgeClass = "bg-blue-200 hover:bg-blue-200 text-blue-800";
-      } else if (isInContact) {
-        status = "In Kontakt";
-        badgeClass = "bg-purple-200 hover:bg-purple-200 text-purple-800";
-      }
-
       return (
-        <Badge className={`rounded-full px-2 py-1 text-xs font-semibold ${badgeClass}`}>
-          {status}
-        </Badge>
+        <StatusBadge
+          isFinished={row.original.isFinished}
+          isBorrowed={row.original.isBorrowed}
+          isApproved={row.original.isApproved}
+          isInContact={row.original.isInContact}
+        />
       );
     },
   },
