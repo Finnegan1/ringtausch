@@ -3,6 +3,7 @@
 import { Star } from "lucide-react";
 import { useState } from "react";
 
+import { rate } from "@/actions/rate";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,12 +17,10 @@ import { Textarea } from "@/components/ui/textarea";
 interface RatingPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  apiUrl: string;
   loanId: number;
-  onSubmit?: (rating: number, message: string) => void;
 }
 
-export function RatingPopup({ isOpen, onClose, apiUrl, loanId, onSubmit }: RatingPopupProps) {
+export function RatingPopup({ isOpen, onClose, loanId }: RatingPopupProps) {
   const [rating, setRating] = useState(0);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,21 +31,7 @@ export function RatingPopup({ isOpen, onClose, apiUrl, loanId, onSubmit }: Ratin
     setLoading(true);
     setError("");
     try {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ loanId, rating, message }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to submit rating");
-      }
-      const data = await response.json();
-      console.log("Rating submitted successfully:", data);
-      if (onSubmit) {
-        onSubmit(rating, message);
-      }
+      await rate(loanId, rating, message);
       setRating(0);
       setMessage("");
       onClose();

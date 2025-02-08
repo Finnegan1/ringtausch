@@ -272,7 +272,6 @@ export function BorrowRequestsTable({ data, refreshData }: TableSectionProps) {
           setIsRatingPopupOpen(false);
           refreshData();
         }}
-        apiUrl="/api/my-borrows/rate"
         loanId={selectedLoanId ?? 0}
       />
 
