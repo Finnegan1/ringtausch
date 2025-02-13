@@ -13,12 +13,23 @@ const USER_COUNT = 9500;
 async function main(): Promise<void> {
   const faker = new Faker();
   for (let i = 0; i < USER_COUNT; i++) {
-    const user = await faker.generateUser();
-    await prisma.user.create({
-      data: user,
-    });
-    if (!(i % 100)) {
+    if (!(i % 50)) {
       console.log(`Created ${i} users`);
+    }
+    const { user, account } = await faker.generateUserAccount();
+    try {
+      await prisma.user.upsert({
+        where: { email: user.email },
+        update: user,
+        create: user,
+      });
+      await prisma.account.upsert({
+        where: { id: account.id },
+        update: account,
+        create: account,
+      });
+    } catch (e) {
+      console.error(e);
     }
   }
 }
