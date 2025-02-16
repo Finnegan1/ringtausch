@@ -1,4 +1,4 @@
-import { Account, Item, User } from "@prisma/client";
+import { Account, Item, Loan, User } from "@prisma/client";
 import * as fs from "fs";
 import { v4 } from "uuid";
 
@@ -9,8 +9,19 @@ import Random from "./random";
  * All generated names are unique and consist of ONE first name and ONE last name.
  */
 export class Faker {
+  private readonly borrowerMessage = "Ich würde gerne diesen Gegenstand ausleihen";
+  private readonly borrowerSatisfactionMessages = [
+    "Alles super, gerne wieder!",
+    "Hat alles gut geklappt. Der Gegenstand musste vor benutzung noch gereinigt werden...",
+    "Der Gegenstand war nicht ganz so wie erwartet, aber hat seinen Zweck erfüllt.",
+    "Der Gegenstand war leider nicht so wie erwartet und hat nicht seinen Zweck erfüllt.",
+    "Ich konnte den Gegenstand nicht am vereinbarten Zeitpunkt abholen, da der Verleiher nicht erreichbar war.",
+  ];
+  private readonly defaultDescription =
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
   private readonly defaultHashedPassword = // password = "password"
     "7ec27c121045fe4153d459d3bcf2d293:2653d87a292903f331c72a061ec38aaed725a65a439b28cfb4b1c09f3601748f0136b74213d3076559a45d1eaeef35ef7fe1f888f4538325f3f5307ed5a682e9";
+  private readonly earliestDate = new Date(2025, 0, 1);
   private readonly emailProvider =
     "gmail.com,yahoo.de,yahoo.com,outlook.com,hotmail.com,web.de,gmx.de,gmx.net,t-online.de,freenet.de,protonmail.com,icloud.com,aol.com,zoho.com,mail.com,posteo.de,fastmail.com,me.com,live.com,yandex.com".split(
       ","
@@ -27,6 +38,14 @@ export class Faker {
     "Müller Schmidt Schneider Fischer Weber Meyer Wagner Becker Schulz Bauer Richter Klein Wolf Schröder Neumann Schwarz Zimmermann Braun Krüger Hofmann Hartmann Lange Schmitt Werner Schmitz Krause Meier Lehmann Schmid Schulze Maier Köhler Herrmann König Walter Mayer Huber Kaiser Fuchs Peters Lang Scholz Möller Weiß Jung Hahn Schubert Vogel Friedrich Keller Günther Frank Berger Winkler Roth Beck Lorenz Baumann Voigt Sauer Winter Haas Sommer Graf Seidel Simon Böhm Brandt Jäger Krämer Schumann Engelmann Ziegler Busch Kühn Pohl Horn Arnold Kessler Barth Ludwig Schröter Vogt Sauerland Nowak Hauser Otto Albrecht Dreyer Sander Stark Förster Kunze Heinze Krämer Ebert Schuster Fiedler Rudolph Ullrich".split(
       " "
     );
+  private readonly latestDate = new Date(2025, 5, 31);
+  private readonly loanerSatisfactionMessages = [
+    "Alles super, der Gegenstand wurde in einwandfreiem Zustand zurückgegeben.",
+    "Der Gegenstand wurde in gutem Zustand zurückgegeben.",
+    "Der Gegenstand wurde nicht komplett gereinigt zurückgegeben.",
+    "Der Gegenstand wurde beschädigt zurückgegeben.",
+    "Der Gegenstand wurde beschädigt und nicht gereinigt zurückgegeben.",
+  ];
   private readonly streetNames =
     "Hauptstraße,Bahnhofstraße,Schulstraße,Gartenstraße,Dorfstraße,Bergstraße,Kirchstraße,Lindenstraße,Rosenstraße,Sonnenstraße,Beethovenstraße,Mozartstraße,Goethestraße,Schillerstraße,Lessingstraße,Kantstraße,Wilhelmstraße,Friedrichstraße,Humboldtstraße,Jahnstraße,Hegelstraße,Uhlandstraße,Bachstraße,Ringstraße,Marktplatz,Brunnenstraße,Waldstraße,Birkenstraße,Tulpenweg,Nelkenweg,Kastanienallee,Buchenweg,Eichenstraße,Akazienweg,Eschenstraße,Fichtenstraße,Ahornweg,Kiefernweg,Tannenstraße,Sommerstraße,Herbststraße,Winterstraße,Mühlenstraße,Brückenstraße,Wiesenweg,Feldstraße,Industriestraße,Talstraße,Höhenweg,Am Hang,Am Wald,Am Bach,Am Sportplatz,Am Markt,Am Rathaus,Am Anger,Am Bahnhof,Am Schulberg,Am Sonnenhang,Zum Dorfplatz,Zum Weiher,Zum Brunnen,An der Kirche,An der Mühle,An der Schule,An der Linde,An der Eiche,An den Linden,Zum Sportplatz,Zum Spielplatz,Alte Straße,Neue Straße,Mittelstraße,Oberstraße,Unterstraße,Weststraße,Oststraße,Südstraße,Nordstraße,Bahnhofplatz,Rathausplatz,Kirchplatz,Schulplatz,Marktstraße,Handelsstraße,Schmiedestraße,Weberstraße,Bäckerstraße,Schreinerweg,Poststraße,Hafenstraße,Uferstraße,Seestraße,Teichweg,Brunnengasse,Dorfanger,Vogelsang,Lerchenweg,Meisenweg,Finkenweg".split(
       ","
@@ -34,34 +53,129 @@ export class Faker {
 
   private generatedNames = new Set<string>();
   private ids = new Set<number>();
+  private itemIds = new Set<number>();
   private postalCodes: PostalCodes = {};
+  private postalCodesArray: string[] = [];
   private rnd = new Random(12345);
+  private userIds = new Set<number>();
 
-  public generateItem(ownerId: string): Item {
+  /**
+   * Generates a random item for a random user.
+   * Note that the users must be generated before the items.
+   * Otherwise the items will not have valid user ids.
+   */
+  public generateItem(): Item {
     const createdAt = new Date();
     const id = this.generateId();
+    this.itemIds.add(id);
+    const ownerId = this.rnd.randomChoice(Array.from(this.userIds));
     return {
       createdAt,
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       id,
-      isActive: this.rnd.random() > 0.1, // 90% of the items are active
+      description: this.defaultDescription,
+      isActive: this.rnd.random() < 0.9, // 90% of the items are active
       name: this.itemNames[this.rnd.randIntBetween(0, this.itemNames.length - 1)],
       pictures: [],
-      isDeleted: this.rnd.random() > 0.9, // 10% of the items are deleted
-      ownerId,
+      isDeleted: this.rnd.random() < 0.1, // 10% of the items are deleted
+      ownerId: String(ownerId),
     };
   }
 
+  /**
+   * Generates a list of random items for random users.
+   * Note that the users must be generated before the items.
+   * Otherwise the items will not have valid user ids.
+   */
+  public async generateItems(count: number): Promise<Item[]> {
+    const items: Item[] = [];
+    for (let i = 0; i < count; i++) {
+      items.push(this.generateItem());
+    }
+    return items;
+  }
+
+  /**
+   * Generates a rondom loan for random user/item.
+   * Note that the items and users must be generated before the loans.
+   * Otherwise the loans will not have valid item and user ids.
+   */
+  public generateLoan(): Loan {
+    const isApproved = this.rnd.random() < 0.5; // 50% of the loans are approved
+    const isBorrowed = isApproved && this.rnd.random() < 0.8; // 80% of the approved loans are borrowed
+    const isFinished = isBorrowed && this.rnd.random() < 0.5; // 50% of the borrowed loans are finished
+    const isInContact = isApproved;
+    const borrowerSatisfaction = isFinished ? this.rnd.randIntBetween(1, 5) : null;
+    const { startAt, endAt } = this.generateRandomBlocker();
+    const borrowerSatisfactionMessage = borrowerSatisfaction
+      ? this.borrowerSatisfactionMessages[5 - borrowerSatisfaction]
+      : null;
+    const loanerSatisfaction = isFinished ? this.rnd.randIntBetween(1, 5) : null;
+    const loanerSatisfactionMessage = loanerSatisfaction
+      ? this.loanerSatisfactionMessages[5 - loanerSatisfaction]
+      : null;
+    const loan: Loan = {
+      id: this.generateId(),
+      createdAt: new Date(),
+      borrowerId: String(this.rnd.randomChoice(Array.from(this.userIds))),
+      itemId: this.rnd.randomChoice(Array.from(this.itemIds)),
+      startAt,
+      endAt,
+
+      isApproved,
+      isInContact,
+      isBorrowed,
+      isFinished,
+
+      borrowerMessage: this.borrowerMessage,
+      borrowerSatisfaction,
+      borrowerSatisfactionMessage,
+
+      loanerSatisfaction,
+      loanerSatisfactionMessage,
+    };
+    return loan;
+  }
+
+  /**
+   * Generates a list of random loans.
+   * Note that the items and users must be generated before the loans.
+   * Otherwise the loans will not have valid item and user ids.
+   */
+  public generateLoans(count: number): Loan[] {
+    const loans: Loan[] = [];
+    for (let i = 0; i < count; i++) {
+      loans.push(this.generateLoan());
+    }
+    return loans;
+  }
+
+  /**
+   * Returns a random blocker for a loan, i.e.
+   * a random start and end date.
+   */
+  public generateRandomBlocker(): { startAt: Date; endAt: Date } {
+    const daysBetween = this.rnd.randIntBetween(1, 7);
+    const startAt = new Date(
+      this.rnd.randIntBetween(this.earliestDate.getTime(), this.latestDate.getTime())
+    );
+    startAt.setHours(0, 0, 0, 0);
+    const endAt = new Date(startAt.getTime() + daysBetween * 24 * 60 * 60 * 1000);
+    return { startAt, endAt };
+  }
+
+  /**
+   * Generates a random user and the corresponding account.
+   */
   public async generateUserAccount(): Promise<UserAccount> {
     const name = this.generateName();
     const postalCode = await this.generatePostalCode();
-    const id = String(this.generateId());
+    const userId = this.generateId();
     const accountId = String(this.generateId());
     const createdAt = new Date();
     const updatedAt = new Date();
+    this.userIds.add(userId);
     const user: User = {
-      id,
+      id: String(userId),
       name,
       firstName: this.getFirstName(name),
       lastName: this.getLastName(name),
@@ -83,7 +197,7 @@ export class Faker {
       accessToken: null,
       password: this.defaultHashedPassword,
       refreshToken: null,
-      userId: id,
+      userId: String(userId),
       createdAt,
       updatedAt,
       accessTokenExpiresAt: new Date(createdAt.getTime() + 1000 * 60 * 60 * 24 * 365),
@@ -93,6 +207,17 @@ export class Faker {
       scope: null,
     };
     return { user, account };
+  }
+
+  /**
+   * Generates a list of random users and the corresponding accounts.
+   */
+  public async generateUserAccounts(count: number): Promise<UserAccount[]> {
+    const userAccounts: UserAccount[] = [];
+    for (let i = 0; i < count; i++) {
+      userAccounts.push(await this.generateUserAccount());
+    }
+    return userAccounts;
   }
 
   /**
@@ -144,7 +269,7 @@ export class Faker {
    * Returns a random postal code from Dresden, Freital, Pirna or Radebeul.
    */
   private async generatePostalCode(): Promise<string> {
-    if (Object.keys(this.postalCodes).length === 0) {
+    if (this.postalCodesArray.length === 0) {
       this.postalCodes = await fetchPostalCodes();
       for (const entry in this.postalCodes) {
         if (["Dresden", "Freital", "Pirna", "Radebeul"].includes(this.postalCodes[entry].name)) {
@@ -152,9 +277,9 @@ export class Faker {
         }
         delete this.postalCodes[entry];
       }
+      this.postalCodesArray = Object.keys(this.postalCodes);
     }
-    const postalCodesArray = Object.keys(this.postalCodes);
-    return postalCodesArray[this.rnd.randIntBetween(0, postalCodesArray.length - 1)];
+    return this.rnd.randomChoice(this.postalCodesArray);
   }
 
   /**
@@ -176,7 +301,7 @@ type PostalCodes = {
   [key: string]: { neighbors: string[]; name: string };
 };
 
-type UserAccount = {
+export type UserAccount = {
   account: Account;
   user: User;
 };
