@@ -44,10 +44,10 @@ export function NavBar() {
               Meine Verleihungen
             </Button>
           </Link>
-          <Link href="/meine-anfragen" prefetch={true}>
+          <Link href="/my-borrows" prefetch={true}>
             <Button variant="ghost" size="sm">
               <HeartHandshake className="mr-2 h-4 w-4" />
-              Meine Anfragen
+              Meine Ausleihen & Anfragen
             </Button>
           </Link>
         </div>
