@@ -30,6 +30,12 @@ copy the `.env.example` file to `.env.local` and fill in with your values.
 npm install
 ```
 
+1. b) Install husky hooks:
+
+```bash
+npm run prepare
+```
+
 2. Generate Prisma client:
 
 ```bash

@@ -20,5 +20,8 @@
   "prettier.configPath": ".prettierrc.json",
   "editor.insertSpaces": true,
   "files.insertFinalNewline": true,
-  "files.trimTrailingWhitespace": true
+  "files.trimTrailingWhitespace": true,
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
 }
