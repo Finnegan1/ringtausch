@@ -15,7 +15,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import postalCodes from "@/constants/postal-codes.json";
 import { authClient } from "@/lib/auth-client";
+
+type PostalCodeData = Record<string, { name: string }>;
+const postalCodeData: PostalCodeData = postalCodes;
+
+export const postalCodeInvalid = "Postal Code invalid";
 
 export function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -37,6 +43,16 @@ export function RegisterForm() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePostalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const postalCode = e.target.value.replace(/\D/g, "").slice(0, 5);
+
+    setFormData((prev) => ({
+      ...prev,
+      postalCode,
+      city: postalCode.length === 5 ? postalCodeData[postalCode]?.name || postalCodeInvalid : "",
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -157,18 +173,24 @@ export function RegisterForm() {
                   id="postalCode"
                   name="postalCode"
                   value={formData.postalCode}
-                  onChange={handleChange}
+                  onChange={handlePostalCodeChange}
                   required
+                  className={formData.city === postalCodeInvalid ? "text-red-500" : ""}
                 />
               </div>
-              <div className="flex flex-col space-y-1.5">
+              <div className="pointer-events-none flex select-none flex-col space-y-1.5">
                 <Label htmlFor="city">City</Label>
                 <Input
                   id="city"
                   name="city"
                   value={formData.city}
-                  onChange={handleChange}
-                  required
+                  readOnly
+                  tabIndex={-1}
+                  className={
+                    formData.city === postalCodeInvalid
+                      ? "pointer-events-none select-none text-red-500"
+                      : "pointer-events-none select-none"
+                  }
                 />
               </div>
             </div>
