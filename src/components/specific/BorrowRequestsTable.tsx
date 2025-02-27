@@ -30,7 +30,7 @@ export type MyBorrows = {
   borrowerMessage?: string | null | undefined;
   item: {
     name: string;
-    picture: string | null | undefined;
+    pictures: string[] | null | undefined;
     description: string | null | undefined;
     owner?: {
       email: string;
@@ -45,11 +45,11 @@ export const getColumns = (
   handleUserCheck: (loanId: number, event: React.MouseEvent) => void
 ): ColumnDef<MyBorrows>[] => [
   {
-    accessorFn: (row) => row.item.picture,
+    accessorFn: (row) => row.item.pictures,
     id: "Bild",
     header: ({ column }) => <DataTableColumnHeader column={column} title="Bild" />,
     cell: ({ row }) => {
-      const pictureUrl = (row.getValue("Bild") as string).split(",")[0];
+      const pictureUrl = (row.getValue("Bild") as string)[0];
       return pictureUrl ? (
         <Image
           src={`${process.env.NEXT_PUBLIC_MINIO_URL}/public-item-images

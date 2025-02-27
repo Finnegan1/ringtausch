@@ -32,11 +32,11 @@ export function LoanDetailsSheet({ loan, isOpen, onClose }: LoanDetailsSheetProp
         </SheetHeader>
         <div className="space-y-6 p-6">
           <div className="flex flex-col items-center space-y-3">
-            {loan.item.picture ? (
+            {loan.item.pictures?.length || 0 > 0 ? (
               <Image
                 width={128}
                 height={128}
-                src={`${process.env.NEXT_PUBLIC_MINIO_URL}/public-item-images/${loan.item.picture.split(",")[0]}`}
+                src={`${process.env.NEXT_PUBLIC_MINIO_URL}/public-item-images/${loan.item.pictures![0]}`}
                 alt="Artikelbild"
                 className="h-32 w-32 rounded-md object-cover shadow-lg"
               />

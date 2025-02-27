@@ -40,10 +40,12 @@ export async function GET(request: Request) {
         borrowerSatisfaction: true,
         borrowerSatisfactionMessage: true,
         borrowerMessage: true,
+        isBorrowed: true,
+        isFinished: true,
         item: {
           select: {
             name: true,
-            picture: true,
+            pictures: true,
             description: true,
           },
         },
@@ -67,10 +69,12 @@ export async function GET(request: Request) {
         borrowerSatisfaction: true,
         borrowerSatisfactionMessage: true,
         borrowerMessage: true,
+        isBorrowed: true,
+        isFinished: true,
         item: {
           select: {
             name: true,
-            picture: true,
+            pictures: true,
             description: true,
             owner: {
               select: {
@@ -105,7 +109,7 @@ export async function GET(request: Request) {
         item: {
           select: {
             name: true,
-            picture: true,
+            pictures: true,
             description: true,
             owner: {
               select: {
@@ -138,7 +142,7 @@ export async function GET(request: Request) {
         item: {
           select: {
             name: true,
-            picture: true,
+            pictures: true,
             description: true,
             owner: {
               select: {
