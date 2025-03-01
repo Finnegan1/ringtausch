@@ -1,16 +1,12 @@
 "use server";
 
+import { User } from "@prisma/client";
 import { headers } from "next/headers";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function updateUserData(data: {
-  street: string;
-  houseNumber: string;
-  city: string;
-  postalCode: string;
-}) {
+export async function updateUserData(data: User) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -21,24 +17,17 @@ export async function updateUserData(data: {
     }
 
     try {
-      console.log(data);
       const update = await prisma.user.update({
         where: {
           id: session.user.id,
         },
-        data: {
-          houseNumber: data.houseNumber,
-          street: data.street,
-          city: data.city,
-          postalCode: data.postalCode,
-        },
+        data,
       });
       return update;
     } catch {
       throw new Error("User update failed");
     }
-  } catch (e) {
-    console.error(e);
+  } catch {
     throw new Error("Internal Server Error");
   }
 }

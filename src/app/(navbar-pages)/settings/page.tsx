@@ -16,5 +16,9 @@ export default async function SettingsPage() {
     },
   });
 
-  return <UserForm initialData={userData!} />;
+  return (
+    <div className="flex h-full items-center justify-center">
+      <UserForm initialData={userData!} />
+    </div>
+  );
 }
