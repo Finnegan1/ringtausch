@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Messages } from "@/constants/messages";
 import { useToast } from "@/hooks/use-toast";
 import { getPublicItemImageUrl, uploadFile } from "@/lib/utils";
 import { ItemUpdateSchema, MAX_FILE_SIZE, itemUpdateSchema } from "@/schemas/item";
@@ -80,8 +81,12 @@ export function UpdateForm({ initialData }: UpdateFormProps) {
             newFileIds.push(fileId);
             await uploadFile(file.file, presignedUrl);
           }
-        } catch (error) {
-          console.error(error);
+        } catch {
+          toast({
+            title: "Fehler",
+            description: Messages.ERROR_FILE_UPLOAD,
+            variant: "destructive",
+          });
         }
       }
 
@@ -93,7 +98,7 @@ export function UpdateForm({ initialData }: UpdateFormProps) {
 
       toast({
         title: "Erfolg!",
-        description: "Dein Angebot wurde aktualisiert.",
+        description: Messages.SUCCESS_ITEM_UPDATE,
       });
 
       router.push("/meine-angebote");
@@ -101,7 +106,7 @@ export function UpdateForm({ initialData }: UpdateFormProps) {
     } catch {
       toast({
         title: "Fehler",
-        description: "Angebot konnte nicht aktualisiert werden. Bitte versuche es erneut.",
+        description: Messages.ERROR_ITEM_UPDATE,
         variant: "destructive",
       });
     } finally {
@@ -118,8 +123,7 @@ export function UpdateForm({ initialData }: UpdateFormProps) {
       if (fileRejection.errors.some((err) => err.code === ErrorCode.FileTooLarge)) {
         toast({
           variant: "destructive",
-          title: "Datei zu groß",
-          description: `Datei '${fileRejection.file.name}' ist zu groß.`,
+          title: Messages.ERROR_FILE_TOO_LARGE,
         });
       }
     });

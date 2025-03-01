@@ -3,6 +3,7 @@
 import { Item } from "@prisma/client";
 import { headers } from "next/headers";
 
+import { Messages } from "@/constants/messages";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ItemFormSchema, itemFormSchema } from "@/schemas/item";
@@ -13,7 +14,7 @@ export async function createItem(data: ItemFormSchema) {
   });
 
   if (!session) {
-    throw new Error("You must be logged in to create an item");
+    throw new Error(Messages.ERROR_USER_NOT_LOGGED_IN);
   }
 
   const result = itemFormSchema.safeParse(data);
@@ -34,9 +35,9 @@ export async function createItem(data: ItemFormSchema) {
     return item;
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(`Failed to create item: ${error.message}`);
+      throw new Error(`${Messages.ERROR_ITEM_CREATE}: ${error.message}`);
     }
-    throw new Error("Failed to create item");
+    throw new Error(Messages.ERROR_ITEM_CREATE);
   }
 }
 
@@ -46,7 +47,7 @@ export async function updateItem(id: number, data: ItemFormSchema) {
   });
 
   if (!session) {
-    throw new Error("You must be logged in to update an item");
+    throw new Error(Messages.ERROR_USER_NOT_LOGGED_IN);
   }
 
   const result = itemFormSchema.safeParse(data);
@@ -67,9 +68,9 @@ export async function updateItem(id: number, data: ItemFormSchema) {
     return item;
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(`Failed to update item: ${error.message}`);
+      throw new Error(`${Messages.ERROR_ITEM_UPDATE}: ${error.message}`);
     }
-    throw new Error("Failed to update item");
+    throw new Error(Messages.ERROR_ITEM_UPDATE);
   }
 }
 
@@ -79,7 +80,7 @@ export async function deleteItem(id: number) {
   });
 
   if (!session) {
-    throw new Error("You must be logged in to delete an item");
+    throw new Error(Messages.ERROR_USER_NOT_LOGGED_IN);
   }
 
   try {
@@ -88,9 +89,9 @@ export async function deleteItem(id: number) {
     });
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(`Failed to delete item: ${error.message}`);
+      throw new Error(`${Messages.ERROR_ITEM_DELETE}: ${error.message}`);
     }
-    throw new Error("Failed to delete item");
+    throw new Error(Messages.ERROR_ITEM_DELETE);
   }
 }
 
@@ -100,7 +101,7 @@ export async function getItem(id: number): Promise<Item> {
   });
 
   if (!session) {
-    throw new Error("You must be logged in to get an item");
+    throw new Error(Messages.ERROR_USER_NOT_LOGGED_IN);
   }
 
   try {
@@ -109,14 +110,14 @@ export async function getItem(id: number): Promise<Item> {
     });
 
     if (!item) {
-      throw new Error("Item not found");
+      throw new Error(Messages.ERROR_ITEM_NOT_FOUND);
     }
 
     return item;
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(`Failed to get item: ${error.message}`);
+      throw new Error(`${Messages.ERROR_ITEM_GET}: ${error.message}`);
     }
-    throw new Error("Failed to get item");
+    throw new Error(Messages.ERROR_ITEM_GET);
   }
 }

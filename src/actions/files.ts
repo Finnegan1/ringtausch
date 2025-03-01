@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { v4 as uuidv4 } from "uuid";
 
+import { Messages } from "@/constants/messages";
 import { auth } from "@/lib/auth";
 import { minioClient } from "@/lib/minio-client";
 
@@ -26,14 +27,13 @@ export async function signedUploadUrl(
   });
 
   if (!session) {
-    throw new Error("You must be logged in to create an item");
+    throw new Error(Messages.ERROR_USER_NOT_LOGGED_IN);
   }
 
   try {
     const presignedUrl = await minioClient.presignedPutObject(bucket, fileId, 5 * 60);
     return { presignedUrl, fileId };
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to get presigned URL");
+  } catch {
+    throw new Error(Messages.ERROR_PRESIGNED_URL);
   }
 }

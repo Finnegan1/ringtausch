@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Messages } from "@/constants/messages";
 import { useToast } from "@/hooks/use-toast";
 import { uploadFile } from "@/lib/utils";
 import { ItemCreateSchema, MAX_FILE_SIZE, itemCreateSchema } from "@/schemas/item";
@@ -67,8 +68,11 @@ export default function Erstellen() {
           fileIds.push(fileId);
           await uploadFile(file.file, presignedUrl);
         }
-      } catch (error) {
-        console.error(error);
+      } catch {
+        toast({
+          title: Messages.ERROR_FILE_UPLOAD,
+          variant: "destructive",
+        });
       }
 
       await createItem({
@@ -78,16 +82,14 @@ export default function Erstellen() {
       });
 
       toast({
-        title: "Erfolg!",
-        description: "Dein Angebot wurde erstellt.",
+        title: Messages.SUCCESS_ITEM_CREATE,
       });
 
       router.push("/meine-angebote");
       router.refresh();
     } catch {
       toast({
-        title: "Fehler",
-        description: "Angebot konnte nicht erstellt werden. Bitte versuche es erneut.",
+        title: Messages.ERROR_ITEM_CREATE,
         variant: "destructive",
       });
     } finally {
@@ -106,8 +108,7 @@ export default function Erstellen() {
       if (fileRejection.errors.some((err) => err.code === ErrorCode.FileTooLarge)) {
         toast({
           variant: "destructive",
-          title: "Datei zu groß.",
-          description: `Datei '${fileRejection.file.name}' ist zu groß.`,
+          title: Messages.ERROR_FILE_TOO_LARGE,
         });
       }
     });

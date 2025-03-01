@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { Messages } from "@/constants/messages";
+
 export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export const itemCreateSchema = z.object({
@@ -10,12 +12,12 @@ export const itemCreateSchema = z.object({
       z.object({
         file: z
           .custom<File>()
-          .refine((file) => file instanceof File, "Invalid file")
-          .refine((file) => file.size <= MAX_FILE_SIZE, "Datei überschreitet maximale Dateigröße")
-          .refine((file) => file.type.startsWith("image/"), "Nur Bilddateien sind erlaubt"),
+          .refine((file) => file instanceof File, Messages.ERROR_FILE_INVALID)
+          .refine((file) => file.size <= MAX_FILE_SIZE, Messages.ERROR_FILE_TOO_LARGE)
+          .refine((file) => file.type.startsWith("image/"), Messages.ERROR_FILE_NOT_IMAGE),
       })
     )
-    .min(1, { message: "Mindestens eine Datei ist erforderlich." }),
+    .min(1, { message: Messages.ERROR_FILE_REQUIRED }),
 });
 
 export const itemUpdateSchema = z.object({
@@ -27,9 +29,9 @@ export const itemUpdateSchema = z.object({
       z.object({
         file: z
           .custom<File>()
-          .refine((file) => file instanceof File, "Invalid file")
-          .refine((file) => file.size <= MAX_FILE_SIZE, "Datei überschreitet maximale Dateigröße")
-          .refine((file) => file.type.startsWith("image/"), "Nur Bilddateien sind erlaubt"),
+          .refine((file) => file instanceof File, Messages.ERROR_FILE_INVALID)
+          .refine((file) => file.size <= MAX_FILE_SIZE, Messages.ERROR_FILE_TOO_LARGE)
+          .refine((file) => file.type.startsWith("image/"), Messages.ERROR_FILE_NOT_IMAGE),
       })
     )
     .optional(),

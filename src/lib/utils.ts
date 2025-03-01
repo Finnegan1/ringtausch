@@ -1,6 +1,8 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+import { Messages } from "@/constants/messages";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -17,7 +19,7 @@ export async function uploadFile(file: File, presignedUrl: string) {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to upload file");
+    throw new Error(Messages.ERROR_FILE_UPLOAD);
   }
 }
 

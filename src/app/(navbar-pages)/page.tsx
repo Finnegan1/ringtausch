@@ -34,7 +34,7 @@ export default function MyHomePage() {
         headers: { "Content-Type": "application/json" },
       });
       if (!response.ok) {
-        throw new Error("Failed to fetch data");
+        throw new Error(Messages.ERROR_FETCH_DATA);
       }
       const json = await response.json();
       setData(json);

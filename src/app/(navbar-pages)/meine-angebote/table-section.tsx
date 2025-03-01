@@ -23,6 +23,7 @@ import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Sheet, SheetContent, SheetFooter, SheetHeader } from "@/components/ui/sheet";
 import { Time } from "@/components/ui/time";
 import { Typography } from "@/components/ui/typography";
+import { Messages } from "@/constants/messages";
 import { toast } from "@/hooks/use-toast";
 import { getPublicItemImageUrl } from "@/lib/utils";
 
@@ -70,19 +71,17 @@ export function TableSection({ data }: TableSectionProps) {
   const onDelete = async () => {
     try {
       if (!row?.original.id) {
-        throw new Error("Angebot ID nicht gefunden");
+        throw new Error(Messages.ERROR_ITEM_NOT_FOUND);
       }
       await deleteItem(row.original.id);
       setOpen(false);
       toast({
-        title: "Erfolg",
-        description: "Das Angebot wurde erfolgreich gelöscht.",
+        title: Messages.SUCCESS_ITEM_DELETE,
       });
       router.refresh();
     } catch {
       toast({
-        title: "Fehler",
-        description: "Das Angebot konnte nicht gelöscht werden.",
+        title: Messages.ERROR_ITEM_DELETE,
         variant: "destructive",
       });
     }
