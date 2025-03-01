@@ -52,8 +52,7 @@ export const getColumns = (
       const pictureUrl = (row.getValue("Bild") as string)[0];
       return pictureUrl ? (
         <Image
-          src={`${process.env.NEXT_PUBLIC_MINIO_URL}/public-item-images
-/${pictureUrl}`}
+          src={`${process.env.NEXT_PUBLIC_MINIO_URL}/public-item-images/${pictureUrl}`}
           alt="Item Picture"
           width={50}
           height={50}

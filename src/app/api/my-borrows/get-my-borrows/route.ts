@@ -3,6 +3,7 @@
 import { NextResponse } from "next/server";
 
 import { MyBorrows } from "@/components/specific/BorrowRequestsTable";
+import { Messages } from "@/constants/messages";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -16,7 +17,7 @@ export async function GET(request: Request) {
     headers: request.headers,
   });
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "User not logged in" }, { status: 401 });
+    return NextResponse.json({ error: Messages.ERROR_USER_NOT_LOGGED_IN }, { status: 401 });
   }
   const borrowerId = session.user.id;
 

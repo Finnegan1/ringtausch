@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { Messages } from "@/constants/messages";
 
 interface RatingPopupProps {
   isOpen: boolean;
@@ -36,7 +37,7 @@ export function RatingPopup({ isOpen, onClose, loanId }: RatingPopupProps) {
       setMessage("");
       onClose();
     } catch {
-      setError("something went wrong. Please try again later.");
+      setError(Messages.ERROR_TRY_AGAIN_LATER);
     } finally {
       setLoading(false);
     }
