@@ -3,6 +3,8 @@
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 
+import { Messages } from "@/constants/messages";
+
 import { BorrowRequestsTable, MyBorrows } from "../../../components/specific/BorrowRequestsTable";
 
 export default function MyBorrowRequests() {
@@ -28,7 +30,7 @@ export default function MyBorrowRequests() {
       const json = await response.json();
       setData(json);
     } catch {
-      setError("Something went wrong. Please try again later.");
+      setError(Messages.ERROR_TRY_AGAIN_LATER);
     } finally {
       setLoading(false);
     }
@@ -70,8 +72,8 @@ export default function MyBorrowRequests() {
         </button>
       </div>
 
-      {loading && <div>Loading...</div>}
-      {error && <div>Error: {error}</div>}
+      {loading && <div>Warte auf Antwort...</div>}
+      {error && <div className="text-red-500">Fehler: {error}</div>}
       {data && <BorrowRequestsTable data={data} refreshData={fetchData} />}
     </div>
   );
