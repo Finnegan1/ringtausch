@@ -27,7 +27,7 @@ export async function createItem(data: ItemFormSchema) {
       data: {
         name: result.data.name,
         description: result.data.description,
-        picture: result.data.picture,
+        pictures: result.data.pictures,
         ownerId: session.user.id,
       },
     });
@@ -61,7 +61,7 @@ export async function updateItem(id: number, data: ItemFormSchema) {
       data: {
         name: result.data.name,
         description: result.data.description,
-        picture: result.data.picture,
+        pictures: result.data.pictures,
       },
     });
     return item;

@@ -53,7 +53,7 @@ export function UpdateForm({ initialData }: UpdateFormProps) {
     defaultValues: {
       name: initialData.name,
       description: initialData.description ?? "",
-      existingImages: initialData.picture ? initialData.picture.split(",") : [],
+      existingImages: initialData.pictures,
       files: [],
     },
   });
@@ -88,7 +88,7 @@ export function UpdateForm({ initialData }: UpdateFormProps) {
       await updateItem(initialData.id, {
         name: data.name,
         description: data.description,
-        picture: [...existingImages, ...newFileIds].join(","),
+        pictures: [...existingImages, ...newFileIds],
       });
 
       toast({

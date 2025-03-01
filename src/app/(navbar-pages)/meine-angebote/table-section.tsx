@@ -117,12 +117,12 @@ export function TableSection({ data }: TableSectionProps) {
               </Typography>
             </div>
 
-            {row?.original.picture && (
+            {row?.original.pictures && (
               <div className="flex items-center justify-center">
                 <div className="w-1/2">
                   <Carousel className="w-full max-w-sm">
                     <CarouselContent>
-                      {row.original.picture.split(",").map((imageId) => (
+                      {row.original.pictures.map((imageId) => (
                         <CarouselItem key={imageId} className="basis-full">
                           <div className="p-1">
                             <Card>

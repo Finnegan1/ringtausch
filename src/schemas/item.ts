@@ -38,7 +38,7 @@ export const itemUpdateSchema = z.object({
 export const itemFormSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
-  picture: z.string().optional(),
+  pictures: z.array(z.string()).optional(),
 });
 
 export type ItemCreateSchema = z.infer<typeof itemCreateSchema>;

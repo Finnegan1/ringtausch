@@ -74,7 +74,7 @@ export default function Erstellen() {
       await createItem({
         name: data.name,
         description: data.description,
-        picture: fileIds.join(","),
+        pictures: fileIds,
       });
 
       toast({
