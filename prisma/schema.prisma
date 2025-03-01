@@ -27,7 +27,6 @@ model User {
   houseNumber String
   postalCode  String
   city        String // ideally inferred from postal code
-  geoLocation String? // todo implement later
 
   createdAt DateTime
   updatedAt DateTime
@@ -96,8 +95,8 @@ model Item {
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   name        String
-  description String?
-  picture     String? // URL
+  description String
+  pictures    String[] // URLs
 
   isActive  Boolean @default(true) // to be set if the owner doesn't want to lend it but doesn't want to delete it
   isDeleted Boolean @default(false) // to be set if the owner "deletes" the item

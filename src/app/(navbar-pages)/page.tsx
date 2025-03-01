@@ -1,16 +1,14 @@
-import Image from "next/image";
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { minioClient } from "@/lib/minio-client";
+
+// import { minioClient } from "@/lib/minio-client";
 
 export default async function DashboardPage() {
-  const url = await minioClient.presignedGetObject(
-    "images",
-    "digitally-generated-image-of-isometric-data-chart.webp",
-    36000
-  );
-
-  console.log(url);
+  // const url = await minioClient.presignedGetObject(
+  //   "images",
+  //   "digitally-generated-image-of-isometric-data-chart.webp",
+  //   36000
+  // );
+  // console.log(url);
 
   return (
     <div>
@@ -25,13 +23,13 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <p>Your dashboard content goes here.</p>
-              <Image
+              {/* <Image
                 src={url}
                 alt="Dashboard Image"
                 width={1200}
                 height={800}
                 className="mt-4 h-auto w-full rounded-lg"
-              />
+              /> */}
             </CardContent>
           </Card>
         </div>
