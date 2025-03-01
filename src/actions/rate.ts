@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 
+import { Messages } from "@/constants/messages";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -12,12 +13,12 @@ export async function rate(loanId: number, rating: number, message: string) {
       headers: headers(),
     });
     if (!session?.user?.id) {
-      throw new Error("User not logged in");
+      throw new Error(Messages.ERROR_USER_NOT_LOGGED_IN);
     }
 
     // Validate rating (must be between 1 and 5)
     if (typeof rating !== "number" || rating < 1 || rating > 5) {
-      throw new Error("Rating number must be between 1 and 5");
+      throw new Error(Messages.ERROR_RATING_INVALID);
     }
 
     // Retrieve the loan record by ID
@@ -26,16 +27,16 @@ export async function rate(loanId: number, rating: number, message: string) {
     });
 
     if (!loan) {
-      throw new Error("Loan not found");
+      throw new Error(Messages.ERROR_LOAN_NOT_FOUND);
     }
     // Check that the loan is finished
     if (!loan.isFinished) {
-      throw new Error("Loan is not finished yet");
+      throw new Error(Messages.ERROR_LOAN_NOT_FINISHED);
     }
 
     if (loan.borrowerSatisfaction !== null || loan.borrowerSatisfactionMessage !== null) {
       if (!loan.isFinished) {
-        throw new Error("Loan allready rated");
+        throw new Error(Messages.ERROR_LOAN_ALREADY_RATED);
       }
     }
 
@@ -49,8 +50,7 @@ export async function rate(loanId: number, rating: number, message: string) {
     });
 
     return updatedLoan;
-  } catch (error) {
-    console.error("Error updating rating:", error);
-    return "Internal Server Error";
+  } catch {
+    throw new Error(Messages.ERROR_INTERNAL_SERVER);
   }
 }
