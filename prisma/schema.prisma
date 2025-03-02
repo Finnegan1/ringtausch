@@ -138,12 +138,14 @@ model Loan {
 
   borrowerMessage String // "welcome message" (initial) from the borrower to the lender
 
-  startAt     DateTime
-  endAt       DateTime
-  isInContact Boolean  @default(false) // marks if the borrower and lender shared contact information
-  isApproved  Boolean  @default(false) // marks if the lender has approved the query
-  isBorrowed  Boolean  @default(false) // marks that the borrower has the item (to be set only by the borrower)
-  isFinished  Boolean  @default(false) // marks that the loaner received the item back (to be set only by the loaner)
+  startAt             DateTime
+  endAt               DateTime
+  isInContact         Boolean  @default(false) // marks if the borrower and lender shared contact information
+  isApproved          Boolean  @default(false) // marks if the lender has approved the query
+  isOwnerConfirmed    Boolean  @default(false) // marks if the owner has confirmed the handover
+  isBorrowerConfirmed Boolean  @default(false) // marks if the borrower has confirmed the handover
+  isBorrowed          Boolean  @default(false) // marks that the borrower has the item (set when both confirm)
+  isFinished          Boolean  @default(false) // marks that the loaner received the item back (to be set only by the loaner)
 
   loanerSatisfaction          Int? // 0-5 - only set if the loan is finished
   borrowerSatisfaction        Int? // 0-5 - only set if the loan is finished
