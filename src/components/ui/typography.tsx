@@ -30,7 +30,7 @@ export const Typography = ({ variant, children, className, ...props }: Typograph
       case "h4":
         return "scroll-m-20 text-xl font-semibold tracking-tight";
       case "p":
-        return "leading-7 [&:not(:first-child)]:mt-6";
+        return "";
       case "blockquote":
         return "mt-6 border-l-2 pl-6 italic";
       case "inlineCode":

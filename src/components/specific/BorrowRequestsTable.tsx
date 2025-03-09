@@ -2,7 +2,7 @@
 
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { de } from "date-fns/locale";
-import { Star, StarHalf, Trash, UserCheck } from "lucide-react";
+import { Star, Trash, UserCheck } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -12,7 +12,7 @@ import { RatingPopup } from "@/components/general/RatingPopup";
 import { StatusBadge } from "@/components/general/StatusBadge";
 import { FullDataTable } from "@/components/general/full-data-table";
 import { LoanDetailsSheet } from "@/components/specific/LoanDetailsSheet";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Time } from "@/components/ui/time";
 
@@ -25,6 +25,8 @@ export type MyBorrows = {
   isInContact: boolean;
   isBorrowed: boolean;
   isFinished: boolean;
+  isOwnerConfirmed?: boolean;
+  isBorrowerConfirmed?: boolean;
   borrowerSatisfaction: number | null | undefined;
   borrowerSatisfactionMessage?: string | null | undefined;
   borrowerMessage?: string | null | undefined;
@@ -117,6 +119,7 @@ export const getColumns = (
           isBorrowed={row.original.isBorrowed}
           isApproved={row.original.isApproved}
           isInContact={row.original.isInContact}
+          isBorrowerConfirmed={row.original.isBorrowerConfirmed}
         />
       );
     },
@@ -137,46 +140,53 @@ export const getColumns = (
 
       if (isApproved && isInContact && !isBorrowed && !isFinished) {
         return (
-          <button
+          <Button
             onClick={(event) => handleUserCheck(loanId, event)}
-            className="flex items-center space-x-2 text-green-500"
+            size="sm"
+            variant="outline"
+            className="text-blue-500"
           >
-            <UserCheck />
-          </button>
+            <UserCheck className="mr-2 h-4 w-4" />
+            Übergabe bestätigen
+          </Button>
         );
       }
       if (isBorrowed && !isFinished) {
-        return <div />;
+        return (
+          <div className="flex flex-col items-start gap-1">
+            <span className="text-xs text-gray-500">Warte auf Rückgabebestätigung</span>
+          </div>
+        );
       }
       if (isFinished && borrowerSatisfaction === null && borrowerSatisfactionMessage === null) {
         return (
-          <button
+          <Button
             onClick={(event) => {
               event.stopPropagation();
               openRatingPopup(loanId);
             }}
-            className="flex items-center space-x-2 text-gray-500"
+            size="sm"
+            variant="outline"
+            className="text-amber-500"
           >
-            <Star />
-            <Star />
-            <StarHalf />
-          </button>
+            <Star className="mr-2 h-4 w-4" />
+            Bewerten
+          </Button>
         );
       }
       if (isFinished && (borrowerSatisfaction != null || borrowerSatisfactionMessage != null)) {
-        return (
-          <Badge className="rounded-full bg-green-200 px-2 py-1 text-xs font-semibold text-green-800">
-            Bewertet 🎉
-          </Badge>
-        );
+        return <span className="text-xs text-gray-500">Bewertung abgegeben</span>;
       }
       return (
-        <button
+        <Button
           onClick={(event) => handleDelete(loanId, event)}
-          className="flex items-center space-x-2 text-red-500"
+          size="sm"
+          variant="outline"
+          className="text-red-500"
         >
-          <Trash />
-        </button>
+          <Trash className="mr-2 h-4 w-4" />
+          Löschen
+        </Button>
       );
     },
   },
@@ -263,15 +273,22 @@ export function BorrowRequestsTable({ data, refreshData }: TableSectionProps) {
       <ConfirmationPopup
         isOpen={isConfirmPopupOpen}
         onClose={() => setIsConfirmPopupOpen(false)}
-        message="Bist du sicher, dass du diese Ausleihe bestätigen möchtest?"
         onConfirm={handleUserCheck}
+        title="Übergabe bestätigen"
+        description="Bestätigst du, dass du den Gegenstand erhalten hast und die Ausleihe beginnt?"
+        confirmText="Bestätigen"
+        cancelText="Abbrechen"
       />
 
       <ConfirmationPopup
         isOpen={isDeletePopupOpen}
         onClose={() => setIsDeletePopupOpen(false)}
-        message="Bist du sicher, dass du diese Leihanfrage löschen möchtest?"
         onConfirm={handleDelete}
+        title="Anfrage löschen"
+        description="Möchtest du diese Ausleihanfrage wirklich löschen?"
+        confirmText="Löschen"
+        cancelText="Abbrechen"
+        confirmButtonVariant="destructive"
       />
     </div>
   );

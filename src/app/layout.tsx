@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next";
 
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
 
 import "./globals.css";
 
@@ -38,6 +39,7 @@ export default function RootLayout({
         >
           <NuqsAdapter>{children}</NuqsAdapter>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );

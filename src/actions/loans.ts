@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 
+import { Messages } from "@/constants/messages";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -11,7 +12,7 @@ export async function confirmBorrow(loanId: number) {
       headers: await headers(),
     });
     if (!session?.user?.id) {
-      throw new Error("User not logged in");
+      throw new Error(Messages.ERROR_USER_NOT_LOGGED_IN);
     }
 
     const loan = await prisma.loan.findUnique({
@@ -22,11 +23,11 @@ export async function confirmBorrow(loanId: number) {
     });
 
     if (!loan) {
-      throw new Error("Loan not found");
+      throw new Error(Messages.ERROR_LOAN_NOT_FOUND);
     }
 
     if (!loan.isInContact || !loan.isApproved) {
-      throw new Error("Loan is not in contact or not approved");
+      throw new Error(Messages.ERROR_LOAN_STATUS);
     }
 
     try {
@@ -35,12 +36,12 @@ export async function confirmBorrow(loanId: number) {
         data: { isBorrowed: true },
       });
     } catch {
-      throw new Error("Loan update failed");
+      throw new Error(Messages.ERROR_LOAN_UPDATE);
     }
 
     return "Confirmed borrow successfully";
   } catch {
-    throw new Error("Internal Server Error");
+    throw new Error(Messages.ERROR_INTERNAL_SERVER);
   }
 }
 
@@ -51,7 +52,7 @@ export async function deleteBorrowRequest(loanId: number) {
     });
 
     if (!session?.user?.id) {
-      throw new Error("User not logged in");
+      throw new Error(Messages.ERROR_USER_NOT_LOGGED_IN);
     }
 
     // TODO: Perform the deletion operation in the database
@@ -66,11 +67,11 @@ export async function deleteBorrowRequest(loanId: number) {
         },
       });
     } catch {
-      throw new Error("Loan update failed");
+      throw new Error(Messages.ERROR_LOAN_UPDATE);
     }
 
     return "deleted loan request successfully";
   } catch {
-    throw new Error("Internal Server Error");
+    throw new Error(Messages.ERROR_INTERNAL_SERVER);
   }
 }

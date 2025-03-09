@@ -13,8 +13,8 @@ interface SearchFilters {
   neighborhood: "direct" | "extended";
 }
 
-export default function HomePage() {
-  const [data, setData] = useState<ItemAPIResponse | null>(null);
+export default function MyHomePage() {
+  const [data, setData] = useState<ItemAPIResponse>({ items: [], postalCodes: [] });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filterInput, setFilterInput] = useState<string>("");
@@ -34,7 +34,7 @@ export default function HomePage() {
         headers: { "Content-Type": "application/json" },
       });
       if (!response.ok) {
-        throw new Error("Failed to fetch data");
+        throw new Error(Messages.ERROR_FETCH_DATA);
       }
       const json = await response.json();
       setData(json);
