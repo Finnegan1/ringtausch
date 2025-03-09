@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -14,11 +15,26 @@ import {
 interface ConfirmationPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  message: string;
   onConfirm: () => void;
+  title?: string;
+  description?: string;
+  message?: string; // For backward compatibility
+  confirmText?: string;
+  cancelText?: string;
+  confirmButtonVariant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
 }
 
-export function ConfirmationPopup({ isOpen, onClose, message, onConfirm }: ConfirmationPopupProps) {
+export function ConfirmationPopup({
+  isOpen,
+  onClose,
+  onConfirm,
+  title = "Bestätigung",
+  description,
+  message,
+  confirmText = "Bestätigen",
+  cancelText = "Abbrechen",
+  confirmButtonVariant = "default",
+}: ConfirmationPopupProps) {
   const [loading, setLoading] = useState(false);
 
   const handleConfirm = async () => {
@@ -37,15 +53,16 @@ export function ConfirmationPopup({ isOpen, onClose, message, onConfirm }: Confi
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Bestätigung</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
+          {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        <p className="text-gray-700 dark:text-gray-300">{message}</p>
+        {message && !description && <p className="text-gray-700 dark:text-gray-300">{message}</p>}
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={loading}>
-            Abbrechen
+            {cancelText}
           </Button>
-          <Button onClick={handleConfirm} disabled={loading}>
-            {loading ? "Bitte warten..." : "Bestätigen"}
+          <Button onClick={handleConfirm} disabled={loading} variant={confirmButtonVariant}>
+            {loading ? "Bitte warten..." : confirmText}
           </Button>
         </DialogFooter>
       </DialogContent>

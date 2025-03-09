@@ -7,6 +7,7 @@ export const Messages = {
   // Authentication errors
   ERROR_AUTHENTICATION: "Ein Fehler bei der Authentifizierung ist aufgetreten.",
   ERROR_USER_NOT_LOGGED_IN: "Du bist nicht eingeloggt.",
+  ERROR_UNAUTHORIZED: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
 
   // Item related errors
   ERROR_ITEM_CREATE: "Fehler beim Erstellen des Angebots.",
@@ -34,6 +35,18 @@ export const Messages = {
   ERROR_LOAN_STATUS: "Die Ausleihe hat nicht den erforderlichen Status.",
   ERROR_LOAN_ALREADY_RATED: "Diese Ausleihe wurde bereits bewertet.",
   ERROR_LOAN_NOT_FINISHED: "Die Ausleihe ist noch nicht abgeschlossen.",
+  ERROR_LOAN_WAITING_OTHER_CONFIRMATION: "Warte auf die Bestätigung der anderen Partei.",
+
+  // Loan related success
+  SUCCESS_LOAN_ACCEPT: "Ausleihanfrage erfolgreich angenommen.",
+  SUCCESS_LOAN_REJECT: "Ausleihanfrage erfolgreich abgelehnt.",
+  SUCCESS_LOAN_BORROW_CONFIRM: "Ausleihe erfolgreich bestätigt.",
+  SUCCESS_LOAN_OWNER_CONFIRM:
+    "Übergabe als Verleiher bestätigt. Warte auf Bestätigung des Ausleihenden.",
+  SUCCESS_LOAN_BORROWER_CONFIRM:
+    "Übergabe als Ausleihender bestätigt. Warte auf Bestätigung des Verleihers.",
+  SUCCESS_LOAN_BOTH_CONFIRMED: "Übergabe von beiden Seiten bestätigt. Die Ausleihe ist nun aktiv.",
+  SUCCESS_LOAN_RETURN: "Rückgabe erfolgreich bestätigt.",
 
   // Rating related errors
   ERROR_RATING_INVALID: "Die Bewertung muss zwischen 1 und 5 liegen.",

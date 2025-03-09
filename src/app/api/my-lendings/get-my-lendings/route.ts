@@ -2,7 +2,7 @@
 
 import { NextResponse } from "next/server";
 
-import { MyBorrows } from "@/components/specific/BorrowRequestsTable";
+import { MyLendings } from "@/components/specific/LendingRequestsTable";
 import { Messages } from "@/constants/messages";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -19,17 +19,31 @@ export async function GET(request: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: Messages.ERROR_USER_NOT_LOGGED_IN }, { status: 401 });
   }
-  const borrowerId = session.user.id;
+  const ownerId = session.user.id;
 
   // Determine which query to execute based on the filter
-  let data: MyBorrows[] = [];
+  let data: MyLendings[] = [];
   if (filter === "pending") {
-    const dataWithoutContact = await prisma.loan.findMany({
+    // Pending requests - not borrowed, not finished, including contact exchanged items
+    data = await prisma.loan.findMany({
       where: {
-        borrowerId,
-        isInContact: false,
+        item: {
+          ownerId,
+        },
         isBorrowed: false,
         isFinished: false,
+        OR: [
+          // Regular pending requests
+          {
+            isApproved: false,
+            isInContact: false,
+          },
+          // Contact exchanged items (should also appear in Anfragen)
+          {
+            isApproved: true,
+            isInContact: true,
+          },
+        ],
       },
       select: {
         id: true,
@@ -45,8 +59,55 @@ export async function GET(request: Request) {
         isFinished: true,
         isOwnerConfirmed: true,
         isBorrowerConfirmed: true,
+        borrower: {
+          select: {
+            email: true,
+            firstName: true,
+          },
+        },
         item: {
           select: {
+            id: true,
+            name: true,
+            pictures: true,
+            description: true,
+          },
+        },
+      },
+    });
+  } else if (filter === "inProcess") {
+    // In process - currently borrowed items only
+    const borrowedData = await prisma.loan.findMany({
+      where: {
+        item: {
+          ownerId,
+        },
+        isBorrowed: true,
+        isFinished: false,
+      },
+      select: {
+        id: true,
+        startAt: true,
+        endAt: true,
+        createdAt: true,
+        isApproved: true,
+        isInContact: true,
+        isBorrowed: true,
+        isFinished: true,
+        isOwnerConfirmed: true,
+        isBorrowerConfirmed: true,
+        borrowerSatisfaction: true,
+        borrowerSatisfactionMessage: true,
+        borrowerMessage: true,
+        borrower: {
+          select: {
+            email: true,
+            firstName: true,
+          },
+        },
+        item: {
+          select: {
+            id: true,
             name: true,
             pictures: true,
             description: true,
@@ -55,83 +116,15 @@ export async function GET(request: Request) {
       },
     });
 
-    const dataWithContact = await prisma.loan.findMany({
-      where: {
-        borrowerId,
-        isInContact: true,
-        isBorrowed: false,
-        isFinished: false,
-      },
-      select: {
-        id: true,
-        startAt: true,
-        endAt: true,
-        createdAt: true,
-        isApproved: true,
-        isInContact: true,
-        borrowerSatisfaction: true,
-        borrowerSatisfactionMessage: true,
-        borrowerMessage: true,
-        isBorrowed: true,
-        isFinished: true,
-        isOwnerConfirmed: true,
-        isBorrowerConfirmed: true,
-        item: {
-          select: {
-            name: true,
-            pictures: true,
-            description: true,
-            owner: {
-              select: {
-                email: true,
-                firstName: true,
-              },
-            },
-          },
-        },
-      },
-    });
-    data = [...dataWithoutContact, ...dataWithContact];
-  } else if (filter === "inProcess") {
-    data = await prisma.loan.findMany({
-      where: {
-        borrowerId,
-        isBorrowed: true,
-        isFinished: false,
-      },
-      select: {
-        id: true,
-        startAt: true,
-        endAt: true,
-        createdAt: true,
-        isApproved: true,
-        isInContact: true,
-        isBorrowed: true,
-        isFinished: true,
-        borrowerSatisfaction: true,
-        borrowerSatisfactionMessage: true,
-        borrowerMessage: true,
-        isOwnerConfirmed: true,
-        isBorrowerConfirmed: true,
-        item: {
-          select: {
-            name: true,
-            pictures: true,
-            description: true,
-            owner: {
-              select: {
-                email: true,
-                firstName: true,
-              },
-            },
-          },
-        },
-      },
-    });
+    // Only include borrowed items in the inProcess tab
+    data = borrowedData;
   } else if (filter === "finished") {
+    // Finished loans
     data = await prisma.loan.findMany({
       where: {
-        borrowerId,
+        item: {
+          ownerId,
+        },
         isFinished: true,
       },
       select: {
@@ -143,22 +136,23 @@ export async function GET(request: Request) {
         isInContact: true,
         isBorrowed: true,
         isFinished: true,
+        isOwnerConfirmed: true,
+        isBorrowerConfirmed: true,
         borrowerSatisfaction: true,
         borrowerSatisfactionMessage: true,
         borrowerMessage: true,
-        isOwnerConfirmed: true,
-        isBorrowerConfirmed: true,
+        borrower: {
+          select: {
+            email: true,
+            firstName: true,
+          },
+        },
         item: {
           select: {
+            id: true,
             name: true,
             pictures: true,
             description: true,
-            owner: {
-              select: {
-                email: true,
-                firstName: true,
-              },
-            },
           },
         },
       },
