@@ -58,7 +58,7 @@ export const getColumns = (
           height={50}
         />
       ) : (
-        <div>No Image</div>
+        <div>Kein Bild</div>
       );
     },
   },

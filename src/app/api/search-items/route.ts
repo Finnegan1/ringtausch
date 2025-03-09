@@ -37,21 +37,32 @@ export async function GET(request: Request) {
       ownerId: {
         in: neighbors.map((neighbor) => neighbor.id),
       },
+      isDeleted: false,
+      isActive: true,
       name: {
         contains: itemName,
+        mode: "insensitive",
       },
     },
     select: {
       id: true,
       name: true,
+      description: true,
+      pictures: true,
+      owner: {
+        select: {
+          postalCode: true,
+        },
+      },
     },
   });
+
+  // add the postal code of the item's owner
 
   const response = {
     items: items,
     postalCodes: neighborhoodPostalCodes,
   };
 
-  console.log(neighborhoodPostalCodes);
   return NextResponse.json(response);
 }

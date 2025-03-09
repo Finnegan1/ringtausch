@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { ItemAPIResponse, ItemsView } from "@/components/specific/ItemsView";
+import { ItemAPIResponse, SearchItemsView } from "@/components/specific/ItemsView";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
@@ -13,8 +13,8 @@ interface SearchFilters {
   neighborhood: "direct" | "extended";
 }
 
-export default function MyHomePage() {
-  const [data, setData] = useState<ItemAPIResponse>({ items: [], postalCodes: [] });
+export default function HomePage() {
+  const [data, setData] = useState<ItemAPIResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filterInput, setFilterInput] = useState<string>("");
@@ -52,7 +52,7 @@ export default function MyHomePage() {
         Suche nach Gegenständen, die du ausleihen kannst und frage deine Nachbarn, ob die
         Leihgegenstände verfügbar sind.
       </p>
-      <div className="mb-4 flex space-x-4">
+      <div className="flex space-x-4">
         <Input
           placeholder="Suchbegriff..."
           value={filterInput}
@@ -76,7 +76,7 @@ export default function MyHomePage() {
 
       {loading && <div>Warte auf Antwort...</div>}
       {error && <div className="text-red-500">Fehler: {error}</div>}
-      {data && <ItemsView data={data} refreshData={fetchData} />}
+      {data && <SearchItemsView data={data} refreshData={fetchData} />}
     </div>
   );
 }
