@@ -81,7 +81,6 @@ export function LendingDetailsSheet({ loan, isOpen, onClose }: LendingDetailsShe
                 isBorrowed={loan.isBorrowed}
                 isApproved={loan.isApproved}
                 isInContact={loan.isInContact}
-                isOwnerConfirmed={loan.isOwnerConfirmed}
                 isBorrowerConfirmed={loan.isBorrowerConfirmed}
               />
             </div>
