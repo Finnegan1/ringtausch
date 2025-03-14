@@ -11,10 +11,7 @@ import { ItemDetailsSheet } from "./ItemDetailsSheet";
 import { ItemRequestSheet } from "./ItemRequestSheet";
 import { SearchItemProps } from "./ItemsView";
 
-export const getColumns = () // openRatingPopup: (loanId: number) => void,
-// handleDelete: (loanId: number, event: React.MouseEvent) => void,
-// handleUserCheck: (loanId: number, event: React.MouseEvent) => void
-: ColumnDef<SearchItemProps>[] => [
+export const getColumns = (): ColumnDef<SearchItemProps>[] => [
   {
     accessorFn: (row) => row.pictures,
     id: "Bild",

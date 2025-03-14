@@ -55,6 +55,11 @@ export default function MyHomePage() {
       <div className="flex space-x-4">
         <Input
           placeholder="Suchbegriff..."
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              fetchData();
+            }
+          }}
           value={filterInput}
           onChange={(event) => setFilterInput(event.target.value)}
           className="max-w-sm"
