@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { getPoints } from "@/actions/points";
 import { Messages } from "@/constants/messages";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -23,9 +24,15 @@ export async function POST(request: Request) {
     borrowerMessage: body.message,
   };
 
-  await prisma.loan.create({
+  const points = await getPoints();
+
+  if (points <= 0) {
+    return NextResponse.json({ error: "Du hast nicht genügend Punkte!" }, { status: 400 });
+  }
+
+  const loan = await prisma.loan.create({
     data: newLoan,
   });
 
-  return new Response(JSON.stringify(body));
+  return NextResponse.json(loan);
 }

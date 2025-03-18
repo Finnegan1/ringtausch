@@ -77,10 +77,25 @@ export function ItemRequestSheet({ blockedDates, item, isOpen, onClose }: ItemRe
           message,
         }),
       })
-        .then((response) => {
+        .then(async (response) => {
+          const data = await response.json();
+
           if (response.ok) {
             resetAll();
             onClose();
+          } else if (data.error && data.error === "Du hast nicht genügend Punkte!") {
+            toast({
+              title: "Nicht genügend Punkte",
+              description: data.error,
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Fehler",
+              description:
+                data.error || "Fehler beim Senden der Anfrage. Bitte versuche es später erneut.",
+              variant: "destructive",
+            });
           }
         })
         .catch((error) => {
