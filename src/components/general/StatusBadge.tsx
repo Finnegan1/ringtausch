@@ -7,13 +7,17 @@ const statusConfig = {
     label: "Ausgeliehen",
     className: "bg-yellow-200 hover:bg-yellow-200 text-yellow-800",
   },
+  contactExchanged: {
+    label: "Kontakt ausgetauscht",
+    className: "bg-blue-200 hover:bg-blue-200 text-blue-800",
+  },
+  borrowerConfirmed: {
+    label: "Übergabe bestätigt",
+    className: "bg-indigo-200 hover:bg-indigo-200 text-indigo-800",
+  },
   approved: {
     label: "Angenommen",
     className: "bg-blue-200 hover:bg-blue-200 text-blue-800",
-  },
-  inContact: {
-    label: "In Kontakt",
-    className: "bg-purple-200 hover:bg-purple-200 text-purple-800",
   },
   default: {
     label: "Angefragt",
@@ -26,11 +30,13 @@ export function StatusBadge({
   isBorrowed,
   isApproved,
   isInContact,
+  isBorrowerConfirmed,
 }: {
   isFinished: boolean;
   isBorrowed: boolean;
   isApproved: boolean;
   isInContact: boolean;
+  isBorrowerConfirmed?: boolean;
 }) {
   let statusKey: keyof typeof statusConfig = "default";
 
@@ -38,10 +44,12 @@ export function StatusBadge({
     statusKey = "finished";
   } else if (isBorrowed) {
     statusKey = "borrowed";
+  } else if (isApproved && isInContact && isBorrowerConfirmed) {
+    statusKey = "borrowerConfirmed";
+  } else if (isApproved && isInContact) {
+    statusKey = "contactExchanged";
   } else if (isApproved) {
     statusKey = "approved";
-  } else if (isInContact) {
-    statusKey = "inContact";
   }
 
   const { label, className } = statusConfig[statusKey];

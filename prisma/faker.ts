@@ -65,7 +65,9 @@ export class Faker {
    * Otherwise the items will not have valid user ids.
    */
   public generateItem(): Item {
-    const createdAt = new Date();
+    const createdAt = new Date(
+      this.earliestDate.getTime() - this.rnd.randIntBetween(0, 1000 * 60 * 60 * 24 * 365)
+    );
     const id = this.generateId();
     this.itemIds.add(id);
     const ownerId = this.rnd.randomChoice(Array.from(this.userIds));
@@ -101,11 +103,17 @@ export class Faker {
    */
   public generateLoan(): Loan {
     const isApproved = this.rnd.random() < 0.5; // 50% of the loans are approved
+
     const isBorrowed = isApproved && this.rnd.random() < 0.8; // 80% of the approved loans are borrowed
+    const isBorrowerConfirmed = isBorrowed;
     const isFinished = isBorrowed && this.rnd.random() < 0.5; // 50% of the borrowed loans are finished
+    const isOwnerConfirmed = isFinished;
     const isInContact = isApproved;
     const borrowerSatisfaction = isFinished ? this.rnd.randIntBetween(1, 5) : null;
     const { startAt, endAt } = this.generateRandomBlocker();
+    const createdAt = new Date(
+      startAt.getTime() - this.rnd.randIntBetween(1000 * 60 * 60 * 24 * 3, 1000 * 60 * 60 * 24 * 31)
+    ); // 3-31 days before startAt
     const borrowerSatisfactionMessage = borrowerSatisfaction
       ? this.borrowerSatisfactionMessages[5 - borrowerSatisfaction]
       : null;
@@ -115,11 +123,14 @@ export class Faker {
       : null;
     const loan: Loan = {
       id: this.generateId(),
-      createdAt: new Date(),
+      createdAt,
       borrowerId: String(this.rnd.randomChoice(Array.from(this.userIds))),
       itemId: this.rnd.randomChoice(Array.from(this.itemIds)),
       startAt,
       endAt,
+
+      isBorrowerConfirmed,
+      isOwnerConfirmed,
 
       isApproved,
       isInContact,

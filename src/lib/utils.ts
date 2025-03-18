@@ -1,6 +1,8 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+import { Messages } from "@/constants/messages";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -17,6 +19,10 @@ export async function uploadFile(file: File, presignedUrl: string) {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to upload file");
+    throw new Error(Messages.ERROR_FILE_UPLOAD);
   }
+}
+
+export function getPublicItemImageUrl(bucket: string, imageId: string) {
+  return `${process.env.NEXT_PUBLIC_MINIO_URL}/${bucket}/${imageId}`;
 }

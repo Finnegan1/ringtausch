@@ -20,7 +20,6 @@ async function main(): Promise<void> {
   const loans = faker.generateLoans(LOAN_COUNT);
   console.log(`Generated ${loans.length} loans`);
 
-  console.log(userAccounts[0].user);
   await addUserAccountsToDatabase(userAccounts);
   await addItemsToDatabase(items);
   await addLoansToDatabase(loans);
