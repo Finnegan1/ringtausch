@@ -1,17 +1,24 @@
-import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { headers } from "next/headers";
 
-export default function SettingsPage() {
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+
+import { UserForm } from "./form";
+
+export default async function SettingsPage() {
+  const session = await auth.api.getSession({
+    headers: headers(),
+  });
+
+  const userData = await prisma.user.findUnique({
+    where: {
+      id: session?.user.id,
+    },
+  });
+
   return (
     <div className="flex h-full items-center justify-center">
-      <Card className="mx-auto">
-        <CardHeader>
-          <CardTitle>Settings</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ThemeToggle />
-        </CardContent>
-      </Card>
+      <UserForm initialData={userData!} />
     </div>
   );
 }
