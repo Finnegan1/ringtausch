@@ -1,8 +1,9 @@
 "use client";
 
 import { User } from "@prisma/client";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
+import { getPoints } from "@/actions/points";
 import { updateUserData } from "@/actions/updateUser";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,16 @@ export function UserForm({ initialData }: FormProps) {
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(initialData);
+  const [points, setPoints] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchPoints = async () => {
+      const points = await getPoints();
+      setPoints(points);
+      console.log(points);
+    };
+    fetchPoints();
+  }, []);
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -167,6 +178,12 @@ export function UserForm({ initialData }: FormProps) {
         <>
           <CardContent className="p-6">
             <div className="grid gap-6">
+              <div>
+                <h3 className="text-lg font-medium">
+                  Punktestand: {` ${points !== null ? points : "Lade Punkte..."}`}
+                </h3>
+                <Separator className="my-2" />
+              </div>
               <div>
                 <h3 className="text-lg font-medium">Persönliche Daten</h3>
                 <Separator className="my-2" />

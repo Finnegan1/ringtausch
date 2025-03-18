@@ -9,6 +9,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useToast } from "@/hooks/use-toast";
 
 import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar";
@@ -28,15 +29,17 @@ export function ItemRequestSheet({ blockedDates, item, isOpen, onClose }: ItemRe
   const [startAt, setStartAt] = useState<Date | null>(null);
   const [endAt, setEndAt] = useState<Date | null>(null);
   const [message, setMessage] = useState<string>("");
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const { toast } = useToast();
 
   const setDate = (date: Date) => {
     if (blockedDates.some((blockedDate) => blockedDate.toDateString() === date.toDateString())) {
-      setErrorMessage("An diesem Tag ist die Ausleihe nicht möglich.");
+      toast({
+        title: "Ausleihe nicht möglich",
+        description: "An diesem Tag ist die Ausleihe nicht möglich. Bitte wähle einen anderen Tag.",
+        variant: "destructive",
+      });
       return;
     }
-
-    setErrorMessage("");
 
     if (!startAt) {
       setStartAt(date);
@@ -51,7 +54,6 @@ export function ItemRequestSheet({ blockedDates, item, isOpen, onClose }: ItemRe
   };
 
   const resetDates = () => {
-    setErrorMessage("");
     setStartAt(null);
     setEndAt(null);
   };
@@ -83,10 +85,18 @@ export function ItemRequestSheet({ blockedDates, item, isOpen, onClose }: ItemRe
         })
         .catch((error) => {
           console.error(error);
-          setErrorMessage("Fehler beim Senden der Anfrage. Bitte versuche es später erneut.");
+          toast({
+            title: "Fehler",
+            description: "Fehler beim Senden der Anfrage. Bitte versuche es später erneut.",
+            variant: "destructive",
+          });
         });
     } else {
-      setErrorMessage("Bitte wähle einen Zeitraum aus.");
+      toast({
+        title: "Bitte wähle einen Zeitraum",
+        description: "Nutze den Kalender, um einen Zeitraum für die Ausleihe auszuwählen.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -107,7 +117,6 @@ export function ItemRequestSheet({ blockedDates, item, isOpen, onClose }: ItemRe
           </SheetDescription>
         </SheetHeader>
         <div className="space-y-6 p-6">
-          <span className="m-auto text-sm text-red-500 dark:text-red-400">{errorMessage}</span>
           <Calendar
             modifiers={{ blockedDates }}
             modifiersClassNames={{ blockedDates: "bg-red-300 dark:bg-red-500" }}
