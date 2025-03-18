@@ -103,8 +103,11 @@ export class Faker {
    */
   public generateLoan(): Loan {
     const isApproved = this.rnd.random() < 0.5; // 50% of the loans are approved
+
     const isBorrowed = isApproved && this.rnd.random() < 0.8; // 80% of the approved loans are borrowed
+    const isBorrowerConfirmed = isBorrowed;
     const isFinished = isBorrowed && this.rnd.random() < 0.5; // 50% of the borrowed loans are finished
+    const isOwnerConfirmed = isFinished;
     const isInContact = isApproved;
     const borrowerSatisfaction = isFinished ? this.rnd.randIntBetween(1, 5) : null;
     const { startAt, endAt } = this.generateRandomBlocker();
@@ -125,6 +128,9 @@ export class Faker {
       itemId: this.rnd.randomChoice(Array.from(this.itemIds)),
       startAt,
       endAt,
+
+      isBorrowerConfirmed,
+      isOwnerConfirmed,
 
       isApproved,
       isInContact,

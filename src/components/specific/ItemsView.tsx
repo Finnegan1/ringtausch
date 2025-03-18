@@ -1,28 +1,30 @@
+import { ItemSearchTable } from "./ItemSearchTable";
+
 export interface ItemsViewProps {
   data: ItemAPIResponse;
   refreshData: () => void;
 }
 
 export interface ItemAPIResponse {
-  items: ItemProps[];
+  items: SearchItemProps[];
   postalCodes: string[];
 }
 
-export interface ItemProps {
+export interface SearchItemProps {
   id: number;
   name: string;
   description: string;
   pictures: string[];
   owner: {
-    email: string;
-    firstName: string;
+    postalCode: string;
   };
 }
 
-export function ItemsView({ data }: ItemsViewProps) {
+export function SearchItemsView({ data }: ItemsViewProps) {
   return (
-    <div>
-      <h1 className="mb-4 mt-4 font-bold">
+    <div className="mt-16">
+      <hr />
+      <h1 className="mb-10 mt-16 font-bold">
         Suchergebnisse
         {data.postalCodes.length > 1 && (
           <span className="font-normal">
@@ -37,12 +39,12 @@ export function ItemsView({ data }: ItemsViewProps) {
           </span>
         )}
       </h1>
-      {data.items.map((item) => (
-        <div key={item.id}>
-          <h2>{item.name}</h2>
-          <p>{item.description}</p>
-        </div>
-      ))}
+      {data.items.length > 0 && <ItemSearchTable data={data.items} />}
+      {data.items.length === 0 && (
+        <p className="text-gray-500 dark:text-gray-400">
+          Es wurden keine Gegenstände gefunden, die deiner Suche entsprechen.
+        </p>
+      )}
     </div>
   );
 }

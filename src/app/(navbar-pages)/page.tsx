@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { ItemAPIResponse, ItemsView } from "@/components/specific/ItemsView";
+import { ItemAPIResponse, SearchItemsView } from "@/components/specific/ItemsView";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
@@ -52,9 +52,14 @@ export default function MyHomePage() {
         Suche nach Gegenständen, die du ausleihen kannst und frage deine Nachbarn, ob die
         Leihgegenstände verfügbar sind.
       </p>
-      <div className="mb-4 flex space-x-4">
+      <div className="flex space-x-4">
         <Input
           placeholder="Suchbegriff..."
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              fetchData();
+            }
+          }}
           value={filterInput}
           onChange={(event) => setFilterInput(event.target.value)}
           className="max-w-sm"
@@ -76,7 +81,7 @@ export default function MyHomePage() {
 
       {loading && <div>Warte auf Antwort...</div>}
       {error && <div className="text-red-500">Fehler: {error}</div>}
-      {data && <ItemsView data={data} refreshData={fetchData} />}
+      {data && <SearchItemsView data={data} refreshData={fetchData} />}
     </div>
   );
 }
