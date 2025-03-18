@@ -103,9 +103,9 @@ export function LendingDetailsSheet({ loan, isOpen, onClose }: LendingDetailsShe
                   {loan.isOwnerConfirmed && !loan.isBorrowerConfirmed
                     ? "Du hast die Übergabe bereits bestätigt. Warte auf die Bestätigung des Ausleihenden."
                     : !loan.isOwnerConfirmed && loan.isBorrowerConfirmed
-                      ? "Der Ausleihende hat die Übergabe bereits bestätigt. Bitte bestätige die Übergabe mit dem Button &ldquo;Ausleihe bestätigen&ldquo;."
+                      ? 'Der Ausleihende hat die Übergabe bereits bestätigt. Bitte bestätige die Übergabe mit dem Button "Ausleihe bestätigen".'
                       : !loan.isOwnerConfirmed && !loan.isBorrowerConfirmed
-                        ? "Du hast die Kontaktdaten freigegeben. Sobald der Gegenstand übergeben wurde, bestätige bitte die Ausleihe mit dem Button &ldquo;Ausleihe bestätigen&ldquo;."
+                        ? "Du hast die Kontaktdaten freigegeben. Warte nun, bis die ausleihende Person die Übergabe bestätigt hat."
                         : "Fehler: Unerwarteter Status."}
                 </p>
               </div>
