@@ -1,12 +1,20 @@
 "use client";
 
 import { useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 import { LendingRequestsTable, MyLendings } from "@/components/specific/LendingRequestsTable";
 import { Messages } from "@/constants/messages";
 
 export default function MeineVerleihungen() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MeineVerleihungenPageContent />
+    </Suspense>
+  );
+}
+
+function MeineVerleihungenPageContent() {
   const [activeTab, setActiveTab] = useQueryState<"pending" | "inProcess" | "finished">("tab", {
     defaultValue: "pending",
     parse: (value) => value as "pending" | "inProcess" | "finished",
